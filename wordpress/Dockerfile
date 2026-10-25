@@ -49,7 +49,8 @@ ENV WP_CLI_CACHE_DIR=/tmp/wp-cli-cache
 
 COPY docker/php.ini /usr/local/etc/php/conf.d/zz-biblioteka.ini
 COPY docker/apache-robots.conf /etc/apache2/conf-available/biblioteka-robots.conf
-RUN a2enmod headers && a2enconf biblioteka-robots
+COPY docker/apache-cache.conf /etc/apache2/conf-available/biblioteka-cache.conf
+RUN a2enmod headers && a2enconf biblioteka-robots biblioteka-cache
 
 # Only our own code, the importer and Duplicator (site export for moving to
 # production; inactive until needed). Akismet and Hello Dolly ship with core.
