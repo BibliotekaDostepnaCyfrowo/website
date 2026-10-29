@@ -4,19 +4,21 @@
 # image (or a restart) always runs exactly what was built here. See README.md.
 #
 # Keep the base in step with compose.yml.
-ARG WORDPRESS_IMAGE=wordpress:7.1.3-php8.3-apache@sha256:d42f63cb89ad0eab272c4b393164e63830d0df270009907919f7dcce52b1a20b
+ARG WORDPRESS_IMAGE=wordpress:7.1.4-php8.3-apache@sha256:12ec50e21cb81a5ea964669d434578b7da4a101a45aef83f5f1c2227bcd1b058
 
 # Downloads are verified against checksums pinned here. WordPress.org publishes
 # none for language packs or plugins, so those were recorded on first download:
 # when translations for this version are refreshed upstream, the build fails on
 # purpose and the new checksum has to be reviewed and pinned.
 FROM ${WORDPRESS_IMAGE} AS fetch
-ARG WP_VERSION=7.1.3
-ARG PL_PL_SHA256=71a91628f63611eab9dff6b9f7472ce2ecacb20bb82471462e09f6accbc16247
+ARG WP_VERSION=7.1.4
+ARG PL_PL_SHA256=2ec3654160e2e15e796a50539a16a1964eabdfec4aae6b9a39b3198ce082626e
 ARG WP_CLI_VERSION=2.12.0
 ARG WP_CLI_SHA512=be928f6b8ca1e8dfb9d2f4b75a13aa4aee0896f8a9a0a1c45cd5d2c98605e6172e6d014dda2e27f88c98befc16c040cbb2bd1bfa121510ea5cdf5f6a30fe8832
 ARG IMPORTER_VERSION=0.9.7
 ARG IMPORTER_SHA256=d1b4d5c516351a5433fd98a58e1ff965c7822048d63de38840b6c7c506f422a6
+ARG DUPLICATOR_VERSION=5.1.0
+ARG DUPLICATOR_SHA256=5d6566a934ae5e96b9f5225b755767321183b71b8a0775d3b0221e480f56b388
 RUN apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/*
 WORKDIR /fetch
 RUN set -eux; \
@@ -28,6 +30,9 @@ RUN set -eux; \
 	echo "${IMPORTER_SHA256}  importer.zip" | sha256sum -c -; \
 	mkdir -p out/plugins; \
 	unzip -q importer.zip -d out/plugins; \
+	curl -fsSL -o duplicator.zip "https://downloads.wordpress.org/plugin/duplicator.${DUPLICATOR_VERSION}.zip"; \
+	echo "${DUPLICATOR_SHA256}  duplicator.zip" | sha256sum -c -; \
+	unzip -q duplicator.zip -d out/plugins; \
 	curl -fsSL -o out/wp-cli.phar "https://github.com/wp-cli/wp-cli/releases/download/v${WP_CLI_VERSION}/wp-cli-${WP_CLI_VERSION}.phar"; \
 	echo "${WP_CLI_SHA512}  out/wp-cli.phar" | sha512sum -c -
 
@@ -46,7 +51,8 @@ COPY docker/php.ini /usr/local/etc/php/conf.d/zz-biblioteka.ini
 COPY docker/apache-robots.conf /etc/apache2/conf-available/biblioteka-robots.conf
 RUN a2enmod headers && a2enconf biblioteka-robots
 
-# Only our own code and the importer. Akismet and Hello Dolly ship with core.
+# Only our own code, the importer and Duplicator (site export for moving to
+# production; inactive until needed). Akismet and Hello Dolly ship with core.
 RUN rm -rf /usr/src/wordpress/wp-content/plugins/akismet /usr/src/wordpress/wp-content/plugins/hello.php
 COPY --from=fetch /fetch/out/plugins/ /usr/src/wordpress/wp-content/plugins/
 COPY --from=fetch /fetch/out/languages/ /usr/src/wordpress/wp-content/languages/

@@ -128,7 +128,9 @@ with Facebook posts) with real emoji characters and strips stray forms from post
 - **Page width**: pages and articles line up with the 1280px grid like the news
   list. Running text is capped at 768px for readability; columns, groups and
   galleries use the full width.
-- **No plugins** are needed.
+- **No plugins** are needed to run the site. The image ships two inactive tools:
+  the importer and Duplicator (a full-site backup, `installer.php` plus archive,
+  for moving the site to another host).
 
 ## Checks
 
@@ -147,7 +149,7 @@ docker compose run --rm browser screenshot.mjs /shots/<folder> home=http://local
 
 `Dockerfile` builds the image the cluster runs. Everything except uploads and the
 database comes from it: core, the theme, Polish translations, WP-CLI, the
-(inactive) importer and `smtp.php`. Setup scripts are in `/opt/setup`.
+(inactive) importer, Duplicator and `smtp.php`. Setup scripts are in `/opt/setup`.
 Every version and download is pinned; bump them in the Dockerfile together with
 `compose.yml`.
 
