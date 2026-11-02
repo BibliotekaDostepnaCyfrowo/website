@@ -1,6 +1,6 @@
 <?php
 /**
- * Biblioteka Żukowo theme.
+ * Biblioteka Dostępna Cyfrowo theme.
  *
  * Content that staff need to change (opening hours, branches, partners,
  * footer links) lives in synced patterns, which Editors can edit without
@@ -347,16 +347,7 @@ function bz_branches_today() {
 		return $branches;
 	}
 
-	// Short names for the "today" bar; a branch added later shows its heading.
-	$short_names = array(
-		'zukowo'      => 'Żukowo',
-		'banino'      => 'Banino',
-		'chwaszczyno' => 'Chwaszczyno',
-		'lezno'       => 'Leźno',
-		'niestepowo'  => 'Niestępowo',
-	);
-
-	$walk = function ( $blocks ) use ( &$walk, &$branches, $short_names ) {
+	$walk = function ( $blocks ) use ( &$walk, &$branches ) {
 		foreach ( $blocks as $block ) {
 			$heading = $block['innerBlocks'][0] ?? null;
 			if ( $heading && 'core/heading' === $heading['blockName'] && in_array( $block['blockName'], array( 'core/column', 'core/group' ), true ) ) {
@@ -365,7 +356,7 @@ function bz_branches_today() {
 				if ( is_string( $id ) && '' !== $id ) {
 					$branches[] = array(
 						'id'    => $id,
-						'name'  => $short_names[ $id ] ?? trim( wp_strip_all_tags( $heading['innerHTML'] ) ),
+						'name'  => trim( wp_strip_all_tags( $heading['innerHTML'] ) ),
 						'hours' => bz_hours_today( render_block( $block ) ),
 					);
 					continue;

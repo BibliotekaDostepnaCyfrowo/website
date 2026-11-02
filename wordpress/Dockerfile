@@ -1,4 +1,4 @@
-# Production image for bibliotekazukowo.pl. Code, translations and tools come from
+# Production image of the library site. Code, translations and tools come from
 # the image; only wp-content/uploads and the database are persistent. The official
 # entrypoint copies /usr/src/wordpress into /var/www/html on every start, so a new
 # image (or a restart) always runs exactly what was built here. See README.md.

@@ -1,4 +1,4 @@
-# Local development copy of bibliotekazukowo.pl. Everything lives in Docker:
+# Local development copy of the library site. Everything lives in Docker:
 # the database and uploads are named volumes, the theme is mounted from this repo.
 # See README.md. Not used in production.
 name: wp-local
