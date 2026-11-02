@@ -1,8 +1,10 @@
 # Biblioteka Dostępna Cyfrowo on WordPress
 
-The library's site runs on WordPress. This folder holds everything that is ours:
-the theme, a setup script and the local development environment. Content
-(posts, pages, media) lives in WordPress, not in git.
+An example website for a public library, on WordPress. This folder holds
+everything that is ours: the theme, a setup script and the local development
+environment. Content (posts, pages, media) lives in WordPress, not in git; the
+setup script only seeds example content for a fictional library, which staff
+then replace.
 
 Everything runs in Docker. Nothing needs to be installed on your machine.
 
@@ -10,7 +12,7 @@ Everything runs in Docker. Nothing needs to be installed on your machine.
 wordpress/
 ├── compose.yml                 local environment (WordPress, MariaDB, WP-CLI, screenshots)
 ├── theme/biblioteka-zukowo/    the block theme: theme.json, templates, parts, patterns
-├── setup/setup.php             idempotent site setup (settings, pages, editable blocks)
+├── setup/setup.php             idempotent site setup (settings, pages, editable blocks, example content)
 ├── setup/clean-content.php     idempotent cleanup of imported content
 ├── mu-plugins/bz-smtp.php      sends mail through SMTP_* env (no-op when unset)
 ├── Dockerfile, docker/         the production image
@@ -32,11 +34,32 @@ docker compose down -v                     # stop and delete all local data
 
 The theme folder is mounted into the container, so edits show up on reload.
 
-### Fresh copy of the live site
+### Fresh example site
 
-1. In the live site's admin: Narzędzia → Eksport → Cała zawartość → Pobierz plik eksportu.
+```bash
+docker compose up -d
+docker compose run --rm cli wp core install --url=http://localhost:8088 \
+  --title=Biblioteka --admin_user=admin --admin_password=admin \
+  --admin_email=admin@example.test --skip-email
+docker compose run --rm cli wp post delete 1 2 3 --force   # sample content of a fresh install
+docker compose run --rm cli wp language core install pl_PL --activate
+docker compose run --rm cli wp theme activate biblioteka-zukowo
+docker compose run --rm cli wp eval-file /setup/setup.php
+```
+
+`setup.php` seeds a fictional library: its name and logo, three branches at
+example addresses (`example.org` emails, `+48 00 …` phones), opening hours,
+numbers, pages (O nas, Kontakt, Katalog online, Deklaracja dostępności) and,
+on a site without posts, three example news posts. The data is at the top of
+the script; everything it creates is ordinary content, edited in the admin.
+
+### Copy of an existing site
+
+1. In the existing site's admin: Narzędzia → Eksport → Cała zawartość → Pobierz plik eksportu.
 2. Put the file in `wordpress/import/export.xml`.
-3. Import it and run the setup (the import downloads all media from the live site and takes about an hour):
+3. Put your library's name and branches in the data at the top of `setup/setup.php`;
+   otherwise the import gets the example library's name, branches and pages.
+4. Import it and run the setup (the import downloads all media from the old site, which can take an hour):
 
 ```bash
 docker compose up -d
@@ -129,7 +152,7 @@ Every version and download is pinned; bump them in the Dockerfile together with
 `compose.yml`.
 
 GitHub Actions builds every push that touches `wordpress/` and pushes
-`ghcr.io/projektbibliotekazukowo/wordpress:<git sha>`. To deploy, set `image.tag`
+`ghcr.io/bibliotekadostepnacyfrowo/wordpress:<git sha>`. To deploy, set `image.tag`
 to that SHA in the german-lab repo (`gitops/apps/staging/biblioteka-staging.yaml`);
 Argo CD rolls it out. Plugins and core can't be updated from the admin
 (`DISALLOW_FILE_MODS`): updates mean rebuilding the image.

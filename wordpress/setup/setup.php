@@ -12,94 +12,49 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
 
+// Example data: a fictional library. Every value here, and everything this script
+// creates, is starter content that staff replace in the admin.
+$library = 'Biblioteka Dostępna Cyfrowo';
+
 $branches = array(
 	array(
-		'id'      => 'zukowo',
-		'name'    => 'Biblioteka główna – Żukowo',
-		'street'  => 'ul. 3 Maja 9B',
-		'city'    => '83-330 Żukowo',
-		'phones'  => array( '+48 58 681 77 63' ),
-		'emails'  => array( 'info@bibliotekazukowo.pl', 'bibpubzukowo@wp.pl' ),
-		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/SkNewWeb/bstart/523002332',
-		'lat'     => 54.3404707,
-		'lon'     => 18.3636395,
+		'id'      => 'glowna',
+		'name'    => 'Biblioteka główna',
+		'street'  => 'ul. Przykładowa 1',
+		'city'    => '00-001 Przykładowo',
+		'phones'  => array( '+48 00 000 00 01' ),
+		'emails'  => array( 'biblioteka@example.org' ),
+		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/',
+		'lat'     => 52.0693,
+		'lon'     => 19.4803,
 		'is_main' => true,
 	),
 	array(
-		'id'      => 'banino',
-		'name'    => 'Filia w Baninie',
-		'street'  => 'ul. Lotnicza 29 (budynek OSP)',
-		'city'    => '80-297 Banino',
-		'phones'  => array( '+48 58 694 15 68' ),
-		'emails'  => array( 'banino@bibliotekazukowo.pl' ),
-		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/SkNewWeb/bstart/523002342',
-		'lat'     => 54.3921375,
-		'lon'     => 18.4061695,
+		'id'      => 'polnoc',
+		'name'    => 'Filia Północ',
+		'street'  => 'ul. Czytelników 12',
+		'city'    => '00-002 Przykładowo',
+		'phones'  => array( '+48 00 000 00 02' ),
+		'emails'  => array( 'polnoc@example.org' ),
+		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/',
+		'lat'     => 52.0921,
+		'lon'     => 19.4655,
 	),
 	array(
-		'id'      => 'chwaszczyno',
-		'name'    => 'Filia w Chwaszczynie',
-		'street'  => 'ul. Żeromskiego 9 (Strefa Kultury)',
-		'city'    => '80-209 Chwaszczyno',
-		'phones'  => array( '+48 502 837 774' ),
-		'emails'  => array( 'chwaszczyno@bibliotekazukowo.pl' ),
-		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/SkNewWeb/bstart/523002343',
-		'lat'     => 54.4412547,
-		'lon'     => 18.4210256,
+		'id'      => 'poludnie',
+		'name'    => 'Filia Południe',
+		'street'  => 'ul. Książkowa 5',
+		'city'    => '00-003 Przykładowo',
+		'phones'  => array( '+48 00 000 00 03' ),
+		'emails'  => array( 'poludnie@example.org' ),
+		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/',
+		'lat'     => 52.0478,
+		'lon'     => 19.5012,
 	),
-	array(
-		'id'      => 'lezno',
-		'name'    => 'Filia w Leźnie',
-		'street'  => 'ul. św. Floriana 12 (budynek OSP)',
-		'city'    => '80-298 Leźno',
-		'phones'  => array( '+48 58 355 07 30' ),
-		'emails'  => array( 'lezno@bibliotekazukowo.pl' ),
-		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/SkNewWeb/bstart/523002344',
-		'lat'     => 54.3473070,
-		'lon'     => 18.4377054,
-	),
-	array(
-		'id'      => 'niestepowo',
-		'name'    => 'Filia w Niestępowie',
-		'street'  => 'ul. Raduńska 14a (nad sklepem spożywczym)',
-		'city'    => '83-331 Przyjaźń',
-		'phones'  => array( '+48 58 355 07 45' ),
-		'emails'  => array( 'niestepowo@bibliotekazukowo.pl' ),
-		'catalog' => 'https://xn--szukamksiki-4kb16m.pl/SkNewWeb/bstart/523002345',
-		'lat'     => 54.3254207,
-		'lon'     => 18.4140584,
-	),
-);
-
-// Partner logos already in the media library (imported from the old logo slider).
-$partners = array(
-	'/Gmina-'                    => 'Gmina Żukowo',
-	'/Okis-'                     => 'Ośrodek Kultury i Sportu w Żukowie',
-	'/Logo-Fundacja-Metropolia-' => 'Fundacja Metropolia Dzieci',
-	'na-start-LOGO'              => 'Projekt „Z książką na start”',
-	'/Moja-Gmina-'               => 'Moja Gmina Żukowo',
-	'/Strefa-Kultury-logo'       => 'Strefa Kultury w Chwaszczynie',
-);
-
-// Documents linked in the footer, found in the media library by file name.
-$documents = array(
-	'Klauzula-informacyjna'                     => 'Klauzula informacyjna (PDF)',
-	'Standardy-Ochrony-Maloletnich-dla-Biblioteki' => 'Standardy ochrony małoletnich (PDF)',
-	'Wersja-skrocona-standardow-ochrony'        => 'Standardy ochrony małoletnich – wersja skrócona (PDF)',
 );
 
 function bz_log( $message ) {
 	WP_CLI::log( $message );
-}
-
-function bz_find_attachment( $fragment ) {
-	global $wpdb;
-	return (int) $wpdb->get_var(
-		$wpdb->prepare(
-			"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value LIKE %s ORDER BY post_id LIMIT 1",
-			'%' . $wpdb->esc_like( $fragment ) . '%'
-		)
-	);
 }
 
 function bz_ensure_page( $slug, $title, $content = '' ) {
@@ -185,142 +140,9 @@ function bz_branch_details( $branch, $hours_ref ) {
 		. "</details>\n<!-- /wp:details -->\n";
 }
 
-/**
- * Sites set up before the shared map have a small map in every branch section.
- * Replaces the first one with the map of all branches, drops the rest with their
- * "Zobacz większą mapę" links, and gives each branch section the id its pin links
- * to. Works on the parsed blocks, so other edits made by staff are kept.
- */
-function bz_migrate_branches_map( $pattern_id, $branches ) {
-	$pattern = get_post( $pattern_id );
-	if ( ! $pattern || ! str_contains( $pattern->post_content, 'openstreetmap.org/export/embed' ) ) {
-		return;
-	}
-
-	$ids = array_column( $branches, 'id', 'name' );
-	$map = parse_blocks( bz_branches_map( $branches ) )[0];
-
-	$walk = function ( $blocks ) use ( &$walk, &$map, $ids ) {
-		$out = array();
-		foreach ( $blocks as $block ) {
-			$name = $block['blockName'];
-			if ( 'core/html' === $name && str_contains( $block['innerHTML'], 'class="bz-map"' ) ) {
-				$out[] = $map;
-				$map   = null;
-				continue;
-			}
-			if ( 'core/paragraph' === $name && str_contains( $block['innerHTML'], 'Zobacz większą mapę' ) ) {
-				$out[] = null;
-				continue;
-			}
-
-			$block['innerBlocks'] = $walk( $block['innerBlocks'] );
-			$kept                 = array();
-			$i                    = 0;
-			foreach ( $block['innerContent'] as $chunk ) {
-				if ( is_string( $chunk ) ) {
-					$kept[] = $chunk;
-				} elseif ( null !== $block['innerBlocks'][ $i++ ] ) {
-					$kept[] = null;
-				} elseif ( $kept && '' === trim( end( $kept ) ) ) {
-					array_pop( $kept );
-				}
-			}
-			$block['innerContent'] = $kept;
-			$block['innerBlocks']  = array_values( array_filter( $block['innerBlocks'] ) );
-
-			// A branch section is a column or card whose first heading is a branch name.
-			$heading = $block['innerBlocks'][0] ?? null;
-			$label   = $heading && 'core/heading' === $heading['blockName'] ? trim( wp_strip_all_tags( $heading['innerHTML'] ) ) : '';
-			if ( isset( $ids[ $label ] ) && in_array( $name, array( 'core/column', 'core/group' ), true ) && ! str_contains( $block['innerContent'][0], ' id="' ) ) {
-				$block['innerContent'][0] = preg_replace( '/<div /', '<div id="' . esc_attr( $ids[ $label ] ) . '" ', $block['innerContent'][0], 1 );
-			}
-			$out[] = $block;
-		}
-		return $out;
-	};
-
-	// Removed blocks come back as null so their place in innerContent can be dropped.
-	$blocks = array_values( array_filter( $walk( parse_blocks( $pattern->post_content ) ) ) );
-	bz_log( 'Replacing the branch maps with one map of all branches (old version kept as a revision)' );
-	wp_save_post_revision( $pattern_id );
-	wp_update_post(
-		array(
-			'ID'           => $pattern_id,
-			'post_title'   => 'Filie (adresy i mapa)',
-			'post_content' => serialize_blocks( $blocks ),
-		)
-	);
-}
-
-/**
- * Sites set up before the catalog links have none in the branch sections. Adds
- * each branch's "Katalog online" link above its opening hours toggle (or at the
- * end of the section). Works on the parsed blocks, so other edits are kept.
- */
-function bz_add_catalog_links( $pattern_id, $branches ) {
-	$pattern = get_post( $pattern_id );
-	if ( ! $pattern || str_contains( $pattern->post_content, '/SkNewWeb/' ) ) {
-		return;
-	}
-
-	$by_id = array_column( $branches, null, 'id' );
-	$added = 0;
-
-	$walk = function ( $blocks ) use ( &$walk, &$added, $by_id ) {
-		foreach ( $blocks as &$block ) {
-			$tag = new WP_HTML_Tag_Processor( $block['innerHTML'] );
-			$id  = $tag->next_tag() ? $tag->get_attribute( 'id' ) : null;
-			if ( ! is_string( $id ) || ! isset( $by_id[ $id ] ) || ! in_array( $block['blockName'], array( 'core/column', 'core/group' ), true ) ) {
-				$block['innerBlocks'] = $walk( $block['innerBlocks'] );
-				continue;
-			}
-
-			$at = count( $block['innerBlocks'] );
-			foreach ( $block['innerBlocks'] as $i => $inner ) {
-				if ( 'core/details' === $inner['blockName'] && str_contains( $inner['attrs']['className'] ?? '', 'bz-hours-toggle' ) ) {
-					$at = $i;
-					break;
-				}
-			}
-			array_splice( $block['innerBlocks'], $at, 0, array( parse_blocks( bz_branch_catalog( $by_id[ $id ] ) )[0] ) );
-
-			// Put its placeholder in innerContent before the $at-th child's, or after the last child.
-			$seen = 0;
-			$pos  = null;
-			foreach ( $block['innerContent'] as $k => $chunk ) {
-				if ( null === $chunk ) {
-					if ( $seen++ === $at ) {
-						$pos = $k;
-						break;
-					}
-					$pos = $k + 1;
-				}
-			}
-			$pos = $pos ?? 1;
-			array_splice( $block['innerContent'], $pos, 0, $seen > $at ? array( null, "\n" ) : array( "\n", null ) );
-			++$added;
-		}
-		return $blocks;
-	};
-
-	$blocks = $walk( parse_blocks( $pattern->post_content ) );
-	if ( ! $added ) {
-		return;
-	}
-	bz_log( "Adding catalog links to $added branch sections (old version kept as a revision)" );
-	wp_save_post_revision( $pattern_id );
-	wp_update_post(
-		array(
-			'ID'           => $pattern_id,
-			'post_content' => wp_slash( serialize_blocks( $blocks ) ),
-		)
-	);
-}
-
 // --- Settings -----------------------------------------------------------------
 
-update_option( 'blogname', 'Biblioteka Samorządowa w Żukowie' );
+update_option( 'blogname', $library );
 update_option( 'blogdescription', '' );
 update_option( 'timezone_string', 'Europe/Warsaw' );
 update_option( 'date_format', 'j F Y' );
@@ -343,10 +165,44 @@ foreach ( get_option( 'sticky_posts', array() ) as $sticky_id ) {
 }
 
 $front = bz_ensure_page( 'strona-glowna', 'Strona główna' );
+$about = bz_ensure_page(
+	'nasza-biblioteka',
+	'Nasza biblioteka',
+	'<!-- wp:paragraph -->
+<p>Tu biblioteka przedstawia swoją historię, misję i zespół. To przykładowa treść: zmień ją w panelu, w Strony → Nasza biblioteka.</p>
+<!-- /wp:paragraph -->'
+);
+$a11y  = bz_ensure_page(
+	'deklaracja-dostepnosci',
+	'Deklaracja dostępności',
+	'<!-- wp:paragraph -->
+<p>Każdy podmiot publiczny publikuje deklarację dostępności swojej strony internetowej, zgodnie z ustawą z dnia 4 kwietnia 2019 r. o dostępności cyfrowej stron internetowych i aplikacji mobilnych podmiotów publicznych. To miejsce na jej treść.</p>
+<!-- /wp:paragraph -->'
+);
 $news  = bz_ensure_page( 'aktualnosci', 'Aktualności' );
 update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', $front );
 update_option( 'page_for_posts', $news );
+
+// Example news, only on a site without any posts, so the news list isn't empty.
+if ( ! get_posts( array( 'post_type' => 'post', 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ) ) ) {
+	$news_items = array(
+		array( 'Spotkanie autorskie w bibliotece głównej', 'Zapraszamy na spotkanie z autorką książek dla dzieci. Wstęp wolny, liczba miejsc ograniczona.' ),
+		array( 'Nowości w księgozbiorze', 'Do naszych placówek trafiło ponad sto nowych tytułów: powieści, reportaże i książki dla najmłodszych.' ),
+		array( 'Ferie z biblioteką', 'Przez dwa tygodnie ferii czekają na dzieci warsztaty plastyczne, gry planszowe i głośne czytanie.' ),
+	);
+	foreach ( $news_items as $i => list( $title, $text ) ) {
+		bz_log( "Creating example post '$title'" );
+		wp_insert_post(
+			array(
+				'post_status'  => 'publish',
+				'post_title'   => $title,
+				'post_content' => "<!-- wp:paragraph -->\n<p>$text</p>\n<!-- /wp:paragraph -->",
+				'post_date'    => wp_date( 'Y-m-d H:i:s', strtotime( '-' . ( $i * 3 ) . ' days' ) ),
+			)
+		);
+	}
+}
 
 // --- Logo ---------------------------------------------------------------------
 
@@ -355,16 +211,16 @@ if ( ! get_theme_mod( 'custom_logo' ) ) {
 	copy( get_theme_file_path( 'assets/images/logo.png' ), $tmp );
 	$logo = media_handle_sideload(
 		array(
-			'name'     => 'logo-biblioteka-zukowo.png',
+			'name'     => 'logo.png',
 			'tmp_name' => $tmp,
 		),
 		0,
-		'Biblioteka Samorządowa w Żukowie'
+		$library
 	);
 	if ( is_wp_error( $logo ) ) {
 		WP_CLI::warning( 'Logo upload failed: ' . $logo->get_error_message() );
 	} else {
-		update_post_meta( $logo, '_wp_attachment_image_alt', 'Biblioteka Samorządowa w Żukowie – strona główna' );
+		update_post_meta( $logo, '_wp_attachment_image_alt', "$library – strona główna" );
 		set_theme_mod( 'custom_logo', $logo );
 		bz_log( 'Logo set' );
 	}
@@ -372,43 +228,19 @@ if ( ! get_theme_mod( 'custom_logo' ) ) {
 
 // --- Synced patterns (editable by staff under "Stałe treści") ------------------
 
-if ( ! get_page_by_path( 'powitanie', OBJECT, 'wp_block' ) ) {
-	$tmp   = wp_tempnam( 'powitanie.jpg' );
-	copy( __DIR__ . '/assets/powitanie.jpg', $tmp );
-	$photo = media_handle_sideload(
-		array(
-			'name'     => 'biblioteka-zukowo-regaly.jpg',
-			'tmp_name' => $tmp,
-		),
-		0,
-		'Regały z książkami'
-	);
-	$photo_alt = 'Regały z książkami w Bibliotece Samorządowej w Żukowie';
-	if ( is_wp_error( $photo ) ) {
-		WP_CLI::warning( 'Welcome photo upload failed: ' . $photo->get_error_message() );
-		$photo_block = '';
-	} else {
-		update_post_meta( $photo, '_wp_attachment_image_alt', $photo_alt );
-		$photo_block = "<!-- wp:image {\"id\":$photo,\"aspectRatio\":\"9/7\",\"scale\":\"cover\",\"sizeSlug\":\"large\",\"linkDestination\":\"none\"} -->\n"
-			. '<figure class="wp-block-image size-large"><img src="' . esc_url( wp_get_attachment_image_url( $photo, 'large' ) ) . '" alt="' . esc_attr( $photo_alt ) . "\" class=\"wp-image-$photo\" style=\"aspect-ratio:9/7;object-fit:cover\"/></figure>\n<!-- /wp:image -->";
-	}
-
-	// Wording adapted from the director's welcome on the "Nasza biblioteka" page.
-	bz_ensure_pattern(
-		'powitanie',
-		'Strona główna: powitanie',
-		'<!-- wp:columns {"verticalAlignment":"center","style":{"spacing":{"blockGap":{"left":"var:preset|spacing|60"}}}} -->
-<div class="wp-block-columns are-vertically-aligned-center"><!-- wp:column {"verticalAlignment":"center"} -->
-<div class="wp-block-column is-vertically-aligned-center"><!-- wp:paragraph {"className":"bz-kicker"} -->
-<p class="bz-kicker">Gmina Żukowo · od 1948 roku</p>
+bz_ensure_pattern(
+	'powitanie',
+	'Strona główna: powitanie',
+	'<!-- wp:paragraph {"className":"bz-kicker"} -->
+<p class="bz-kicker">Przykładowa strona biblioteki publicznej</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":1} -->
-<h1 class="wp-block-heading">Biblioteka Samorządowa w Żukowie</h1>
+<h1 class="wp-block-heading">' . esc_html( $library ) . '</h1>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"fontSize":"large"} -->
-<p class="has-large-font-size">Czeka na Państwa około 43 000 książek w pięciu placówkach w gminie Żukowo. Zapraszamy też na lekcje biblioteczne, spotkania autorskie, warsztaty i konkursy – dla dzieci, młodzieży i dorosłych.</p>
+<p class="has-large-font-size">Wzór strony internetowej biblioteki, dostępnej dla każdego: zgodnej z WCAG 2.2, czytelnej na telefonie i prostej w prowadzeniu. Adresy, godziny i liczby na tej stronie są przykładowe.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons -->
@@ -419,34 +251,27 @@ if ( ! get_page_by_path( 'powitanie', OBJECT, 'wp_block' ) ) {
 <!-- wp:button {"className":"is-style-outline"} -->
 <div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/nasza-biblioteka/">O bibliotece</a></div>
 <!-- /wp:button --></div>
-<!-- /wp:buttons --></div>
-<!-- /wp:column -->
-
-<!-- wp:column {"verticalAlignment":"center"} -->
-<div class="wp-block-column is-vertically-aligned-center">' . $photo_block . '</div>
-<!-- /wp:column --></div>
-<!-- /wp:columns -->'
-	);
-}
+<!-- /wp:buttons -->'
+);
 
 bz_ensure_pattern(
 	'liczby',
 	'Strona główna: biblioteka w liczbach',
 	'<!-- wp:group {"className":"bz-stats","style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"grid","columnCount":4,"minimumColumnWidth":null}} -->
 <div class="wp-block-group bz-stats"><!-- wp:paragraph -->
-<p><strong>5</strong> placówek bibliotecznych</p>
+<p><strong>3</strong> placówki biblioteczne</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><strong><em>około</em> 43 000</strong> woluminów</p>
+<p><strong><em>około</em> 25 000</strong> woluminów</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><strong><em>blisko</em> 2 800</strong> stałych czytelników</p>
+<p><strong><em>blisko</em> 1 500</strong> stałych czytelników</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><strong><em>około</em> 22 000</strong> odwiedzin rocznie</p>
+<p><strong><em>około</em> 12 000</strong> odwiedzin rocznie</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -477,50 +302,26 @@ foreach ( array_slice( $branches, 1 ) as $branch ) {
 }
 $filie .= "</div>\n<!-- /wp:group -->";
 $filie_ref = bz_ensure_pattern( 'filie', 'Filie (adresy i mapa)', $filie );
-bz_migrate_branches_map( $filie_ref, $branches );
-bz_add_catalog_links( $filie_ref, $branches );
 
-$gallery = '';
-foreach ( $partners as $fragment => $name ) {
-	$id = bz_find_attachment( $fragment );
-	if ( ! $id ) {
-		WP_CLI::warning( "Partner logo not found: $name" );
-		continue;
-	}
-	update_post_meta( $id, '_wp_attachment_image_alt', $name );
-	$src      = wp_get_attachment_image_url( $id, 'medium' );
-	$gallery .= "<!-- wp:image {\"id\":$id,\"sizeSlug\":\"medium\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-medium\"><img src=\"" . esc_url( $src ) . '" alt="' . esc_attr( $name ) . "\" class=\"wp-image-$id\"/></figure>\n<!-- /wp:image -->\n";
-}
 bz_ensure_pattern(
 	'partnerzy',
 	'Partnerzy',
-	"<!-- wp:gallery {\"columns\":6,\"imageCrop\":false,\"linkTo\":\"none\",\"sizeSlug\":\"medium\",\"className\":\"bz-partners\"} -->\n<figure class=\"wp-block-gallery has-nested-images columns-6 bz-partners\">$gallery</figure>\n<!-- /wp:gallery -->"
+	'<!-- wp:paragraph {"align":"center"} -->
+<p class="has-text-align-center">Tu są logotypy partnerów biblioteki. Dodaj je jako galerię w panelu, w Stałe treści → Partnerzy.</p>
+<!-- /wp:paragraph -->'
 );
 
 bz_ensure_pattern(
 	'stopka-kontakt',
 	'Stopka: dane kontaktowe',
 	'<!-- wp:paragraph {"fontSize":"small","style":{"typography":{"fontWeight":"600"}}} -->
-<p class="has-small-font-size" style="font-weight:600">Biblioteka Samorządowa w Żukowie<br>' . esc_html( $main['street'] ) . '<br>' . esc_html( $main['city'] ) . '<br>' . bz_contact_links( $main ) . '</p>
+<p class="has-small-font-size" style="font-weight:600">' . esc_html( $library ) . '<br>' . esc_html( $main['street'] ) . '<br>' . esc_html( $main['city'] ) . '<br>' . bz_contact_links( $main ) . '</p>
 <!-- /wp:paragraph -->'
 );
 
 $items = array(
-	array( home_url( '/deklaracja-dostepnosci-strony-internetowej/' ), 'Deklaracja dostępności' ),
-	array( home_url( '/raport-o-stanie-zapewnienia-dostepnosci-podmiotu-publicznego/' ), 'Raport o stanie zapewnienia dostępności' ),
+	array( get_permalink( $a11y ), 'Deklaracja dostępności' ),
 );
-foreach ( $documents as $fragment => $label ) {
-	$id = bz_find_attachment( $fragment );
-	if ( $id ) {
-		$items[] = array( wp_get_attachment_url( $id ), $label );
-	} else {
-		WP_CLI::warning( "Document not found: $label" );
-	}
-}
-// TODO(migration): this PDF sits in the old server's web root, outside the media
-// library. Upload it to the media library and update this link.
-$items[] = array( 'https://www.bibliotekazukowo.pl/Regulamin%20Korzystania%20z%20us%C5%82ug%20Biblioteki.pdf', 'Regulamin korzystania z usług Biblioteki (PDF)' );
-$items[] = array( 'https://bibpubzukowo.naszbip.pl/', 'Biuletyn Informacji Publicznej' );
 
 $list = '';
 foreach ( $items as list( $url, $label ) ) {
@@ -531,7 +332,9 @@ bz_ensure_pattern( 'stopka-linki', 'Stopka: dokumenty i linki', "<!-- wp:list --
 // The contact page shows the same branch details as the home page. Page content
 // lives in the database, so it can reference the pattern by ID directly.
 $contact = get_page_by_path( 'kontakt' );
-if ( $contact && ! has_block( 'core/block', $contact ) ) {
+if ( ! $contact ) {
+	bz_ensure_page( 'kontakt', 'Kontakt', "<!-- wp:block {\"ref\":$filie_ref} /-->" );
+} elseif ( ! has_block( 'core/block', $contact ) ) {
 	bz_log( 'Replacing /kontakt/ content with the branches pattern (old content kept as a revision)' );
 	wp_save_post_revision( $contact->ID );
 	wp_update_post(

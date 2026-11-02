@@ -1,6 +1,6 @@
-# Biblioteka Dostpena Cyfrowo 
+# Biblioteka Dostępna Cyfrowo
 
-The library's website runs on WordPress. Everything in this repo lives in
+An example website for a public library, on WordPress. Everything in this repo lives in
 [`wordpress/`](wordpress/): the block theme, the setup scripts, the local Docker
 environment and the production image. Start with [`wordpress/README.md`](wordpress/README.md).
 

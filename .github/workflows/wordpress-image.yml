@@ -1,6 +1,6 @@
 name: WordPress image
 
-# Builds wordpress/ into ghcr.io/projektbibliotekazukowo/wordpress:<git sha>.
+# Builds wordpress/ into ghcr.io/bibliotekadostepnacyfrowo/wordpress:<git sha>.
 # Every branch builds, so a change can go to staging before it is merged.
 # Deploying is a separate step: bump image.tag in the german-lab repo.
 on:
@@ -15,7 +15,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE: ghcr.io/projektbibliotekazukowo/wordpress
+  IMAGE: ghcr.io/bibliotekadostepnacyfrowo/wordpress
 
 jobs:
   build:
