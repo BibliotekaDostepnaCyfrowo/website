@@ -186,6 +186,10 @@ function bdc_branches_map( $branches ) {
 			esc_html( $branch['name'] )
 		);
 	}
+	// No branch with coordinates: no map, rather than an empty list.
+	if ( '' === $items ) {
+		return '';
+	}
 	return "<!-- wp:html -->\n<div class=\"bdc-map\" data-branches-map><ul class=\"bdc-map__list\">$items</ul></div>\n<!-- /wp:html -->\n";
 }
 
@@ -457,16 +461,22 @@ foreach ( $branches as $branch ) {
 	}
 	$catalogs .= '<!-- wp:list-item --><li><a href="' . esc_url( $branch['catalog'] ) . '">' . esc_html( $branch['name'] ) . "</a></li><!-- /wp:list-item -->\n";
 }
-bdc_ensure_page(
-	'katalog-online',
-	'Katalog online',
-	'<!-- wp:paragraph -->
+// The header and footer always link here, so the page exists even without catalogues.
+$catalog_intro = '' === $catalogs
+	? '<!-- wp:paragraph -->
+<p>Zapytaj w swojej placówce, jak sprawdzić, czy książka jest w zbiorach biblioteki.</p>
+<!-- /wp:paragraph -->'
+	: '<!-- wp:paragraph -->
 <p>Każda nasza placówka ma własny katalog w serwisie SzukamKsiążki.pl. Wybierz placówkę, aby sprawdzić, czy książka jest w jej zbiorach.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:list {"fontSize":"large"} -->
 <ul class="wp-block-list has-large-font-size">' . $catalogs . '</ul>
-<!-- /wp:list -->
+<!-- /wp:list -->';
+bdc_ensure_page(
+	'katalog-online',
+	'Katalog online',
+	$catalog_intro . '
 
 <!-- wp:paragraph -->
 <p>Adresy i godziny otwarcia placówek są na stronie <a href="/kontakt/">Kontakt</a>.</p>
