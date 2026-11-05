@@ -1,12 +1,14 @@
 /*
 Theme Name: Biblioteka Dostępna Cyfrowo
+Theme URI: https://github.com/BibliotekaDostepnaCyfrowo/website
 Description: Motyw strony biblioteki publicznej, dostępnej cyfrowo. Theme for an accessible public library website.
-Version: 1.2.0
+Version: 2.0.0
 Requires at least: 6.6
 Requires PHP: 8.1
-Author: Radek Molenda
+Author: Feature Forest sp. z o.o.
+Author URI: https://featureforest.eu
 License: GPL-2.0-or-later
-Text Domain: biblioteka-zukowo
+Text Domain: biblioteka-dostepna-cyfrowo
 */
 
 /* Only what theme.json can't express lives here. */
@@ -37,20 +39,20 @@ html {
 .admin-bar .wp-site-blocks > header {
 	top: var(--wp-admin--admin-bar--height, 0);
 }
-.bz-header {
+.bdc-header {
 	box-shadow: 0 10px 20px #0000001a;
 }
-.bz-header .wp-block-site-logo img {
+.bdc-header .wp-block-site-logo img {
 	height: auto;
 }
 
 /* Top navigation: blue fill rising from the middle on hover, as in the previous design. */
 @media (min-width: 600px) {
-	.bz-header .wp-block-navigation__container {
+	.bdc-header .wp-block-navigation__container {
 		align-self: stretch;
 		gap: 0;
 	}
-	.bz-header .wp-block-navigation-item__content {
+	.bdc-header .wp-block-navigation-item__content {
 		display: flex;
 		align-items: center;
 		height: 100%;
@@ -61,9 +63,9 @@ html {
 		background-size: 100% 0%;
 		transition: background-size 0.3s ease-out, color 0.3s ease-out;
 	}
-	.bz-header .wp-block-navigation-item__content:hover,
-	.bz-header .wp-block-navigation-item__content:focus-visible,
-	.bz-header .current-menu-item > .wp-block-navigation-item__content {
+	.bdc-header .wp-block-navigation-item__content:hover,
+	.bdc-header .wp-block-navigation-item__content:focus-visible,
+	.bdc-header .current-menu-item > .wp-block-navigation-item__content {
 		color: var(--wp--preset--color--white);
 		background-size: 100% 100%;
 		text-decoration: underline;
@@ -73,10 +75,10 @@ html {
 /* Header search. Wide screens have room for a slim field next to Facebook;
    narrower ones show only the magnifier, which opens the field over the bar
    (core's expandable search: Escape or clicking away closes it). */
-.bz-header {
+.bdc-header {
 	position: relative;
 }
-.bz-search .wp-block-search__inside-wrapper {
+.bdc-search .wp-block-search__inside-wrapper {
 	align-items: center;
 	height: 2.5rem;
 	border: 0;
@@ -84,7 +86,7 @@ html {
 	background: var(--wp--preset--color--gray-light);
 	padding: 0;
 }
-.bz-search .wp-block-search__input {
+.bdc-search .wp-block-search__input {
 	height: 100%;
 	border: 0;
 	border-radius: 999px;
@@ -92,14 +94,14 @@ html {
 	padding: 0 0 0 1rem;
 	font-size: var(--wp--preset--font-size--medium);
 }
-.bz-search .wp-block-search__input::placeholder {
+.bdc-search .wp-block-search__input::placeholder {
 	color: color-mix(in srgb, var(--wp--preset--color--black) 70%, transparent);
 	opacity: 1;
 }
-.bz-search .wp-block-search__input::-webkit-search-cancel-button {
+.bdc-search .wp-block-search__input::-webkit-search-cancel-button {
 	display: none;
 }
-.bz-search .wp-block-search__button {
+.bdc-search .wp-block-search__button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -112,27 +114,27 @@ html {
 	background: transparent;
 	color: var(--wp--preset--color--black);
 }
-.bz-search .wp-block-search__button:hover {
+.bdc-search .wp-block-search__button:hover {
 	background: transparent;
 	color: var(--wp--preset--color--blue);
 }
-.bz-search .wp-block-search__input:focus-visible {
+.bdc-search .wp-block-search__input:focus-visible {
 	outline: none;
 }
-.bz-search .wp-block-search__inside-wrapper:focus-within {
+.bdc-search .wp-block-search__inside-wrapper:focus-within {
 	outline: 2px solid var(--wp--preset--color--blue);
 	outline-offset: 2px;
 }
-.bz-search--inline {
+.bdc-search--inline {
 	width: 15rem;
 }
-.bz-search--compact.wp-block-search__searchfield-hidden .wp-block-search__inside-wrapper {
+.bdc-search--compact.wp-block-search__searchfield-hidden .wp-block-search__inside-wrapper {
 	background: transparent;
 }
-.bz-search--compact.wp-block-search__searchfield-hidden .wp-block-search__inside-wrapper:focus-within {
+.bdc-search--compact.wp-block-search__searchfield-hidden .wp-block-search__inside-wrapper:focus-within {
 	outline: none;
 }
-.bz-search--compact:not(.wp-block-search__searchfield-hidden) .wp-block-search__inside-wrapper {
+.bdc-search--compact:not(.wp-block-search__searchfield-hidden) .wp-block-search__inside-wrapper {
 	position: absolute;
 	inset: 50% var(--wp--style--root--padding-right, 20px) auto var(--wp--style--root--padding-left, 20px);
 	z-index: 1;
@@ -141,49 +143,49 @@ html {
 	box-shadow: 0 0 0 30px var(--wp--preset--color--white);
 }
 @media (min-width: 1100px) {
-	.bz-search--compact {
+	.bdc-search--compact {
 		display: none;
 	}
 }
 @media (max-width: 1099px) {
-	.bz-search--inline {
+	.bdc-search--inline {
 		display: none;
 	}
 }
 
 /* Search page: the same field, larger, with the number of results under it. */
-.bz-search--page {
+.bdc-search--page {
 	max-width: 40rem;
 }
-.bz-search--page .wp-block-search__inside-wrapper {
+.bdc-search--page .wp-block-search__inside-wrapper {
 	height: 3.5rem;
 }
-.bz-search--page .wp-block-search__input {
+.bdc-search--page .wp-block-search__input {
 	padding-left: 1.5rem;
 	font-size: var(--wp--preset--font-size--large);
 }
-.bz-search--page .wp-block-search__button {
+.bdc-search--page .wp-block-search__button {
 	width: 3.5rem;
 	height: 3.5rem;
 }
-.bz-results-count {
+.bdc-results-count {
 	margin-bottom: 0;
 	font-size: var(--wp--preset--font-size--small);
 	font-weight: 600;
 }
-.bz-news .wp-block-query-no-results {
+.bdc-news .wp-block-query-no-results {
 	padding: var(--wp--preset--spacing--60) 0;
 }
-.bz-no-results {
+.bdc-no-results {
 	max-width: var(--wp--style--global--content-size);
 	font-size: var(--wp--preset--font-size--large);
 }
 
-/* "Dziś jesteśmy otwarci" bar ([bz_dzisiaj] in functions.php): today's hours of every branch. */
-.bz-today p {
+/* "Dziś jesteśmy otwarci" bar ([bdc_dzisiaj] in functions.php): today's hours of every branch. */
+.bdc-today p {
 	margin: 0;
 }
-.bz-today__list {
+.bdc-today__list {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -192,8 +194,8 @@ html {
 	padding: 0;
 	list-style: none;
 }
-.bz-today__list a,
-.bz-today__value {
+.bdc-today__list a,
+.bdc-today__value {
 	display: inline-block;
 	padding: 0.5rem 1rem;
 	border: 1px solid var(--wp--preset--color--black);
@@ -203,32 +205,32 @@ html {
 	font-weight: 600;
 	text-decoration: none;
 }
-.bz-today__list a:hover {
+.bdc-today__list a:hover {
 	border-color: var(--wp--preset--color--blue);
 	text-decoration: underline;
 }
-.bz-today__value,
-.bz-today .is-open,
-.bz-hours-today .is-open {
+.bdc-today__value,
+.bdc-today .is-open,
+.bdc-hours-today .is-open {
 	font-weight: 800;
 	color: var(--wp--preset--color--blue);
 }
-.bz-today .is-closed,
-.bz-hours-today .is-closed {
+.bdc-today .is-closed,
+.bdc-hours-today .is-closed {
 	font-weight: 800;
 	color: var(--wp--preset--color--red);
 }
 /* Phones: one compact row per branch, name on the left and hours on the right. */
 @media (max-width: 599px) {
-	.bz-today__list {
+	.bdc-today__list {
 		display: grid;
 		width: 100%;
 		gap: 0;
 	}
-	.bz-today__list li + li {
+	.bdc-today__list li + li {
 		border-top: 1px solid var(--wp--preset--color--gray);
 	}
-	.bz-today__list a {
+	.bdc-today__list a {
 		display: flex;
 		justify-content: space-between;
 		gap: 1rem;
@@ -240,7 +242,7 @@ html {
 }
 
 /* Today's hours above each branch's "Godziny otwarcia" toggle. */
-.bz-hours-today {
+.bdc-hours-today {
 	margin-block-end: 0;
 	font-size: var(--wp--preset--font-size--large);
 }
@@ -251,7 +253,7 @@ html {
 }
 
 /* Welcome section on the home page */
-.bz-kicker {
+.bdc-kicker {
 	margin: 0;
 	color: var(--wp--preset--color--blue);
 	font-size: var(--wp--preset--font-size--small);
@@ -259,15 +261,15 @@ html {
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 }
-.bz-hero h1 {
+.bdc-hero h1 {
 	margin-top: 0.5rem;
 }
-.bz-hero .wp-block-button.is-style-outline > .wp-block-button__link {
+.bdc-hero .wp-block-button.is-style-outline > .wp-block-button__link {
 	border: 2px solid var(--wp--preset--color--blue);
 	background: transparent;
 	color: var(--wp--preset--color--blue);
 }
-.bz-hero .wp-block-button.is-style-outline > .wp-block-button__link:hover {
+.bdc-hero .wp-block-button.is-style-outline > .wp-block-button__link:hover {
 	background: var(--wp--preset--color--blue);
 	color: var(--wp--preset--color--white);
 }
@@ -275,21 +277,21 @@ html {
 /* Library in numbers: four equal columns across the full width (2×2 on phones).
    An optional qualifier ("około", "blisko") is written in italics and shown as a
    small label above the number, so the numbers line up and never wrap. */
-.bz-stats.bz-stats {
+.bdc-stats.bdc-stats {
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	align-items: end;
 }
 @media (max-width: 781px) {
-	.bz-stats.bz-stats {
+	.bdc-stats.bdc-stats {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
-.bz-stats p {
+.bdc-stats p {
 	margin: 0;
 	text-align: center;
 	font-weight: 600;
 }
-.bz-stats strong {
+.bdc-stats strong {
 	display: block;
 	color: var(--wp--preset--color--blue);
 	font-size: var(--wp--preset--font-size--huge);
@@ -297,7 +299,7 @@ html {
 	line-height: 1.1;
 	white-space: nowrap;
 }
-.bz-stats strong em {
+.bdc-stats strong em {
 	display: block;
 	color: var(--wp--preset--color--black);
 	font-size: var(--wp--preset--font-size--small);
@@ -308,7 +310,7 @@ html {
 }
 
 /* "Godziny otwarcia" toggle (core/details) styled like the old opening-hours button. */
-.bz-hours-toggle > summary {
+.bdc-hours-toggle > summary {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.6rem;
@@ -324,10 +326,10 @@ html {
 	cursor: pointer;
 	list-style: none;
 }
-.bz-hours-toggle > summary::-webkit-details-marker {
+.bdc-hours-toggle > summary::-webkit-details-marker {
 	display: none;
 }
-.bz-hours-toggle > summary::before {
+.bdc-hours-toggle > summary::before {
 	content: '';
 	width: 22px;
 	height: 22px;
@@ -335,174 +337,174 @@ html {
 	-webkit-mask: url('assets/images/clock.svg') center / contain no-repeat;
 	mask: url('assets/images/clock.svg') center / contain no-repeat;
 }
-.bz-hours-toggle[open] > summary {
+.bdc-hours-toggle[open] > summary {
 	background: var(--wp--preset--color--blue);
 	color: var(--wp--preset--color--white);
 }
 
 /* Opening hours table; today's row is marked by the script. */
-.bz-hours table {
+.bdc-hours table {
 	width: auto;
 	border-collapse: collapse;
 }
-.bz-branch .bz-hours table {
+.bdc-branch .bdc-hours table {
 	margin-inline: auto;
 }
-.bz-hours td {
+.bdc-hours td {
 	border: 0;
 	padding: 0.25rem 0.75rem;
 	font-size: var(--wp--preset--font-size--large);
 }
-.bz-hours td:first-child {
+.bdc-hours td:first-child {
 	text-align: right;
 }
-.bz-hours tr.is-today {
+.bdc-hours tr.is-today {
 	font-weight: 800;
 	color: var(--wp--preset--color--blue);
 }
 
 /* Branch cards */
-.bz-branch {
+.bdc-branch {
 	box-shadow: 0 0 20px #00000019;
 	background: var(--wp--preset--color--white);
 	text-align: center;
 }
-.bz-branch > * {
+.bdc-branch > * {
 	align-self: stretch;
 }
-.bz-branch a {
+.bdc-branch a {
 	overflow-wrap: anywhere;
 }
-.bz-branch address,
+.bdc-branch address,
 address {
 	font-style: normal;
 }
 /* Map of all branches (assets/js/branches-map.js). Without JavaScript the list shows.
    With JavaScript the map's space is held from the start, so the page below
    doesn't jump when the map replaces the list. */
-.bz-map.is-ready .bz-map__list {
+.bdc-map.is-ready .bdc-map__list {
 	display: none;
 }
 @media (scripting: enabled) {
-	.bz-map[data-branches-map] {
+	.bdc-map[data-branches-map] {
 		min-height: 420px;
 	}
-	.bz-map[data-branches-map] .bz-map__list {
+	.bdc-map[data-branches-map] .bdc-map__list {
 		display: none;
 	}
 }
 @media (scripting: enabled) and (max-width: 781px) {
-	.bz-map[data-branches-map] {
+	.bdc-map[data-branches-map] {
 		min-height: 340px;
 	}
 }
-.bz-map__canvas {
+.bdc-map__canvas {
 	/* Leaflet's panes use z-indexes up to 1000; keep them under the sticky header. */
 	isolation: isolate;
 	height: 420px;
 	box-shadow: 0 0 20px #00000019;
 }
 @media (max-width: 781px) {
-	.bz-map__canvas {
+	.bdc-map__canvas {
 		height: 340px;
 	}
 }
-.bz-map .leaflet-container {
+.bdc-map .leaflet-container {
 	font: inherit;
 }
-.bz-pin {
+.bdc-pin {
 	color: var(--wp--preset--color--blue);
 }
-.bz-pin--main {
+.bdc-pin--main {
 	color: var(--wp--preset--color--red);
 }
-.bz-pin svg {
+.bdc-pin svg {
 	display: block;
 	width: 100%;
 	height: 100%;
 	filter: drop-shadow(0 2px 2px #00000040);
 }
-.bz-pin:focus-visible {
+.bdc-pin:focus-visible {
 	outline: 2px solid var(--wp--preset--color--black);
 	outline-offset: 2px;
 }
-.bz-map .leaflet-popup-content {
+.bdc-map .leaflet-popup-content {
 	margin: 1rem 1.25rem;
 	font-size: var(--wp--preset--font-size--medium);
 	line-height: 1.5;
 }
-.bz-map .leaflet-popup-content p {
+.bdc-map .leaflet-popup-content p {
 	margin: 0 0 0.5rem;
 }
-.bz-map .leaflet-popup-content .bz-map__name {
+.bdc-map .leaflet-popup-content .bdc-map__name {
 	font-size: var(--wp--preset--font-size--large);
 	font-weight: 800;
 }
-.bz-map .leaflet-popup-content .bz-map__links {
+.bdc-map .leaflet-popup-content .bdc-map__links {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.25rem 1rem;
 	margin: 0.75rem 0 0;
 	font-weight: 600;
 }
-.bz-map .leaflet-popup-content .bz-hours-today {
+.bdc-map .leaflet-popup-content .bdc-hours-today {
 	font-size: inherit;
 }
-.bz-map .leaflet-popup-content a {
+.bdc-map .leaflet-popup-content a {
 	color: var(--wp--preset--color--blue);
 }
 
 /* News cards */
-.bz-card {
+.bdc-card {
 	height: 100%;
 	box-shadow: 0 25px 50px -12px #00000040;
 	background: var(--wp--preset--color--white);
 }
 /* The 16:9 frame is set on the figure, with an explicit width: an image narrower
    than the card would otherwise size the figure from its own width. */
-.bz-card .wp-block-post-featured-image {
+.bdc-card .wp-block-post-featured-image {
 	width: 100%;
 	aspect-ratio: 16 / 9;
 }
-.bz-card .wp-block-post-featured-image img {
+.bdc-card .wp-block-post-featured-image img {
 	height: 100%;
 	opacity: 0.7;
 	transition: opacity 0.2s ease-in-out;
 }
-.bz-card:hover .wp-block-post-featured-image img,
-.bz-card:focus-within .wp-block-post-featured-image img {
+.bdc-card:hover .wp-block-post-featured-image img,
+.bdc-card:focus-within .wp-block-post-featured-image img {
 	opacity: 1;
 }
-.bz-card__body {
+.bdc-card__body {
 	padding: var(--wp--preset--spacing--50);
 }
-.bz-card .wp-block-post-title a {
+.bdc-card .wp-block-post-title a {
 	text-decoration: none;
 	color: inherit;
 }
-.bz-card .wp-block-post-title a:hover {
+.bdc-card .wp-block-post-title a:hover {
 	text-decoration: underline;
 }
 
 /* "Czytaj dalej →" links */
-.bz-more a,
+.bdc-more a,
 .wp-block-post-excerpt__more-link {
 	white-space: nowrap;
 }
-.bz-more a::after,
+.bdc-more a::after,
 .wp-block-post-excerpt__more-link::after {
 	content: ' →';
 	display: inline-block;
 	margin-left: 0.25rem;
 	transition: transform 0.1s ease-in-out;
 }
-.bz-more a:hover::after,
-.bz-card:hover .wp-block-post-excerpt__more-link::after {
+.bdc-more a:hover::after,
+.bdc-card:hover .wp-block-post-excerpt__more-link::after {
 	transform: translateX(5px);
 }
 
 /* Grid / list switch on the news list (assets/js/news-view.js). */
-.bz-view-switch {
+.bdc-view-switch {
 	display: flex;
 	flex-shrink: 0;
 	gap: 0.25rem;
@@ -510,17 +512,17 @@ address {
 	border-radius: 8px;
 	background: var(--wp--preset--color--gray-light);
 }
-.bz-view-switch[hidden] {
+.bdc-view-switch[hidden] {
 	display: none;
 }
 /* With JavaScript, hold its space until news-view.js shows it, so the list doesn't jump. */
 @media (scripting: enabled) {
-	.bz-view-switch[hidden] {
+	.bdc-view-switch[hidden] {
 		display: flex;
 		visibility: hidden;
 	}
 }
-.bz-view-switch button {
+.bdc-view-switch button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -533,27 +535,27 @@ address {
 	color: color-mix(in srgb, var(--wp--preset--color--black) 70%, transparent);
 	cursor: pointer;
 }
-.bz-view-switch button:hover {
+.bdc-view-switch button:hover {
 	color: var(--wp--preset--color--blue);
 }
-.bz-view-switch button[aria-pressed='true'] {
+.bdc-view-switch button[aria-pressed='true'] {
 	background: var(--wp--preset--color--white);
 	color: var(--wp--preset--color--blue);
 	box-shadow: 0 1px 3px #00000026;
 }
-.bz-view-switch svg {
+.bdc-view-switch svg {
 	fill: currentColor;
 }
 
 /* List view: one post per row, thumbnail on the left, rows split by a thin line. */
-[data-bz-news-view='list'] .bz-news .wp-block-post-template {
+[data-bdc-news-view='list'] .bdc-news .wp-block-post-template {
 	grid-template-columns: minmax(0, 1fr);
 	gap: 0;
 }
-[data-bz-news-view='list'] .bz-news .wp-block-post-template > li + li {
+[data-bdc-news-view='list'] .bdc-news .wp-block-post-template > li + li {
 	border-top: 1px solid var(--wp--preset--color--gray);
 }
-[data-bz-news-view='list'] .bz-news .bz-card {
+[data-bdc-news-view='list'] .bdc-news .bdc-card {
 	flex-direction: row;
 	align-items: flex-start;
 	gap: var(--wp--preset--spacing--50);
@@ -561,45 +563,45 @@ address {
 	box-shadow: none;
 	background: transparent;
 }
-[data-bz-news-view='list'] .bz-news .wp-block-post-featured-image {
+[data-bdc-news-view='list'] .bdc-news .wp-block-post-featured-image {
 	flex: 0 0 15rem;
 	margin: 0;
 }
-[data-bz-news-view='list'] .bz-news .bz-card__body {
+[data-bdc-news-view='list'] .bdc-news .bdc-card__body {
 	flex: 1;
 	padding: 0;
 }
 /* The title already links to the post, so the list skips "Czytaj dalej". */
-[data-bz-news-view='list'] .bz-news .wp-block-post-excerpt__more-text {
+[data-bdc-news-view='list'] .bdc-news .wp-block-post-excerpt__more-text {
 	display: none;
 }
 @media (max-width: 599px) {
-	[data-bz-news-view='list'] .bz-news .bz-card {
+	[data-bdc-news-view='list'] .bdc-news .bdc-card {
 		gap: var(--wp--preset--spacing--30);
 	}
-	[data-bz-news-view='list'] .bz-news .wp-block-post-featured-image {
+	[data-bdc-news-view='list'] .bdc-news .wp-block-post-featured-image {
 		flex-basis: 6.5rem;
 	}
-	[data-bz-news-view='list'] .bz-news .wp-block-post-title {
+	[data-bdc-news-view='list'] .bdc-news .wp-block-post-title {
 		font-size: var(--wp--preset--font-size--medium) !important;
 	}
-	[data-bz-news-view='list'] .bz-news .wp-block-post-excerpt {
+	[data-bdc-news-view='list'] .bdc-news .wp-block-post-excerpt {
 		display: none;
 	}
 }
 
 /* Partner logos: one row of equal-height logos. */
-.wp-block-gallery.bz-partners {
+.wp-block-gallery.bdc-partners {
 	align-items: center;
 }
-.wp-block-gallery.bz-partners figure.wp-block-image img {
+.wp-block-gallery.bdc-partners figure.wp-block-image img {
 	width: 100%;
 	height: 110px;
 	object-fit: contain;
 }
 
 /* Breadcrumbs */
-.bz-breadcrumbs a {
+.bdc-breadcrumbs a {
 	color: inherit;
 }
 
@@ -625,26 +627,26 @@ address {
 }
 
 /* Footer */
-.bz-footer a {
+.bdc-footer a {
 	color: var(--wp--preset--color--black);
 	text-decoration: none;
 	font-weight: 700;
 }
-.bz-footer a:hover {
+.bdc-footer a:hover {
 	text-decoration: underline;
 }
-.bz-footer ul {
+.bdc-footer ul {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 }
-.bz-footer li + li {
+.bdc-footer li + li {
 	margin-top: 0.75rem;
 }
 
 /* Long URLs and e-mail addresses wrap instead of widening the page (WCAG 1.4.10). */
 .wp-block-post-content,
-.bz-card {
+.bdc-card {
 	overflow-wrap: anywhere;
 }
 .wp-block-post-template.is-layout-grid > li {
@@ -654,7 +656,7 @@ address {
 /* Pages and articles start at the same left edge as the news list (wide width).
    Running text keeps a readable line length; columns, groups and galleries
    (such as the branches on /kontakt/) use the full width. */
-.bz-prose > :where(:not(.wp-block-columns, .wp-block-group, .wp-block-gallery, .alignwide, .alignfull)) {
+.bdc-prose > :where(:not(.wp-block-columns, .wp-block-group, .wp-block-gallery, .alignwide, .alignfull)) {
 	max-width: var(--wp--style--global--content-size);
 }
 

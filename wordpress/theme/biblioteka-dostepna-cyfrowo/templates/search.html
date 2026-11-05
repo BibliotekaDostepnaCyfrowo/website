@@ -2,8 +2,8 @@
 
 <!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
 <main class="wp-block-group">
-	<!-- wp:group {"className":"bz-breadcrumbs","align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"fontSize":"small","layout":{"type":"flex"}} -->
-	<div class="wp-block-group alignwide bz-breadcrumbs has-small-font-size" style="margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)">
+	<!-- wp:group {"className":"bdc-breadcrumbs","align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"fontSize":"small","layout":{"type":"flex"}} -->
+	<div class="wp-block-group alignwide bdc-breadcrumbs has-small-font-size" style="margin-top:var(--wp--preset--spacing--40);margin-bottom:var(--wp--preset--spacing--40)">
 		<!-- wp:paragraph -->
 		<p><a href="/">Strona główna</a> ›</p>
 		<!-- /wp:paragraph -->
@@ -14,16 +14,16 @@
 	<div class="wp-block-group alignwide">
 		<!-- wp:query-title {"type":"search","showSearchTerm":false} /-->
 
-		<!-- wp:pattern {"slug":"biblioteka-zukowo/news-view-switch"} /-->
+		<!-- wp:pattern {"slug":"biblioteka-dostepna-cyfrowo/news-view-switch"} /-->
 	</div>
 	<!-- /wp:group -->
 
 	<!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|30"}},"layout":{"type":"default"}} -->
 	<div class="wp-block-group alignwide">
-		<!-- wp:search {"label":"Szukaj na stronie","showLabel":false,"placeholder":"Czego szukasz?","buttonText":"Szukaj","buttonPosition":"button-inside","buttonUseIcon":true,"className":"bz-search bz-search--page"} /-->
+		<!-- wp:search {"label":"Szukaj na stronie","showLabel":false,"placeholder":"Czego szukasz?","buttonText":"Szukaj","buttonPosition":"button-inside","buttonUseIcon":true,"className":"bdc-search bdc-search--page"} /-->
 
 		<!-- wp:shortcode -->
-		[bz_liczba_wynikow]
+		[bdc_liczba_wynikow]
 		<!-- /wp:shortcode -->
 	</div>
 	<!-- /wp:group -->
@@ -32,15 +32,15 @@
 	<h2 class="wp-block-heading screen-reader-text">Lista wpisów</h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:query {"queryId":3,"query":{"inherit":true},"className":"bz-news","align":"wide"} -->
-	<div class="wp-block-query alignwide bz-news">
+	<!-- wp:query {"queryId":3,"query":{"inherit":true},"className":"bdc-news","align":"wide"} -->
+	<div class="wp-block-query alignwide bdc-news">
 		<!-- wp:post-template {"style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":"16rem"}} -->
-			<!-- wp:pattern {"slug":"biblioteka-zukowo/news-card"} /-->
+			<!-- wp:pattern {"slug":"biblioteka-dostepna-cyfrowo/news-card"} /-->
 		<!-- /wp:post-template -->
 
 		<!-- wp:query-no-results -->
-			<!-- wp:paragraph {"className":"bz-no-results"} -->
-			<p class="bz-no-results">Nic nie znaleźliśmy. Spróbuj innego lub krótszego słowa albo zajrzyj do <a href="/aktualnosci/">aktualności</a>.</p>
+			<!-- wp:paragraph {"className":"bdc-no-results"} -->
+			<p class="bdc-no-results">Nic nie znaleźliśmy. Spróbuj innego lub krótszego słowa albo zajrzyj do <a href="/aktualnosci/">aktualności</a>.</p>
 			<!-- /wp:paragraph -->
 		<!-- /wp:query-no-results -->
 

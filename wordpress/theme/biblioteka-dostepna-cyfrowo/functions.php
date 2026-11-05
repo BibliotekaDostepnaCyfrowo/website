@@ -5,7 +5,7 @@
  * Content that staff need to change (opening hours, branches, partners,
  * footer links) lives in synced patterns, which Editors can edit without
  * access to the Site Editor. Templates pull them in by slug through the
- * [bz_wzorzec] shortcode, so the theme files never depend on database IDs.
+ * [bdc_wzorzec] shortcode, so the theme files never depend on database IDs.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -22,7 +22,7 @@ add_action(
 	'wp_enqueue_scripts',
 	function () {
 		$version = wp_get_theme()->get( 'Version' );
-		wp_enqueue_style( 'biblioteka-zukowo', get_stylesheet_uri(), array(), $version );
+		wp_enqueue_style( 'biblioteka-dostepna-cyfrowo', get_stylesheet_uri(), array(), $version );
 	}
 );
 
@@ -49,7 +49,7 @@ add_action(
  * the .ico is for older browsers and plain /favicon.ico requests. A Site Icon
  * set in the admin takes over from these.
  */
-function bz_favicon_links() {
+function bdc_favicon_links() {
 	if ( has_site_icon() ) {
 		return;
 	}
@@ -59,9 +59,9 @@ function bz_favicon_links() {
 	printf( '<link rel="icon" href="%s" type="image/svg+xml">' . "\n", $icon( 'favicon.svg' ) );
 	printf( '<link rel="apple-touch-icon" href="%s">' . "\n", $icon( 'apple-touch-icon.png' ) );
 }
-add_action( 'wp_head', 'bz_favicon_links' );
-add_action( 'admin_head', 'bz_favicon_links' );
-add_action( 'login_head', 'bz_favicon_links' );
+add_action( 'wp_head', 'bdc_favicon_links' );
+add_action( 'admin_head', 'bdc_favicon_links' );
+add_action( 'login_head', 'bdc_favicon_links' );
 
 // Without a Site Icon, core answers /favicon.ico with the WordPress logo.
 add_action(
@@ -87,7 +87,7 @@ add_filter(
 			wp_enqueue_style( 'leaflet', get_theme_file_uri( 'assets/vendor/leaflet/leaflet.css' ), array(), '1.9.4' );
 			wp_enqueue_script( 'leaflet', get_theme_file_uri( 'assets/vendor/leaflet/leaflet.js' ), array(), '1.9.4', array( 'strategy' => 'defer' ) );
 			wp_enqueue_script(
-				'biblioteka-zukowo-branches-map',
+				'biblioteka-dostepna-cyfrowo-branches-map',
 				get_theme_file_uri( 'assets/js/branches-map.js' ),
 				array( 'leaflet' ),
 				$version,
@@ -107,7 +107,7 @@ add_action(
 	'wp_head',
 	function () {
 		wp_print_inline_script_tag(
-			"try{if(localStorage.getItem('bz-news-view')==='list')document.documentElement.setAttribute('data-bz-news-view','list')}catch(e){}"
+			"try{if(localStorage.getItem('bdc-news-view')==='list')document.documentElement.setAttribute('data-bdc-news-view','list')}catch(e){}"
 		);
 	},
 	1
@@ -116,9 +116,9 @@ add_action(
 add_filter(
 	'render_block_core/html',
 	function ( $content ) {
-		if ( str_contains( $content, 'data-bz-view-switch' ) ) {
+		if ( str_contains( $content, 'data-bdc-view-switch' ) ) {
 			wp_enqueue_script(
-				'biblioteka-zukowo-news-view',
+				'biblioteka-dostepna-cyfrowo-news-view',
 				get_theme_file_uri( 'assets/js/news-view.js' ),
 				array(),
 				wp_get_theme()->get( 'Version' ),
@@ -144,11 +144,11 @@ add_filter(
 );
 
 /**
- * [bz_liczba_wynikow] on the search page: "2 wyniki dla „otwarcie”".
+ * [bdc_liczba_wynikow] on the search page: "2 wyniki dla „otwarcie”".
  * Nothing when there are no results; the template has its own message then.
  */
 add_shortcode(
-	'bz_liczba_wynikow',
+	'bdc_liczba_wynikow',
 	function () {
 		global $wp_query;
 		$count = (int) $wp_query->found_posts;
@@ -167,7 +167,7 @@ add_shortcode(
 		}
 
 		return sprintf(
-			'<p class="bz-results-count">%s %s dla „<strong>%s</strong>”</p>',
+			'<p class="bdc-results-count">%s %s dla „<strong>%s</strong>”</p>',
 			number_format_i18n( $count ),
 			$noun,
 			get_search_query()
@@ -176,10 +176,10 @@ add_shortcode(
 );
 
 /**
- * [bz_wzorzec slug="godziny-otwarcia"] renders the synced pattern with that slug.
+ * [bdc_wzorzec slug="godziny-otwarcia"] renders the synced pattern with that slug.
  */
 add_shortcode(
-	'bz_wzorzec',
+	'bdc_wzorzec',
 	function ( $atts ) {
 		static $rendering = array();
 
@@ -233,7 +233,7 @@ add_action(
 /**
  * Today's weekday in Polish, in the site's time zone (Europe/Warsaw).
  */
-function bz_today() {
+function bdc_today() {
 	$days = array( 'niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota' );
 	return $days[ (int) wp_date( 'w' ) ];
 }
@@ -241,7 +241,7 @@ function bz_today() {
 /**
  * The cells of one table row as plain text; the first is lowercased and loses a trailing colon.
  */
-function bz_row_cells( $row ) {
+function bdc_row_cells( $row ) {
 	preg_match_all( '#<t[dh]\b[^>]*>(.*?)</t[dh]>#is', $row, $matches );
 	$cells = array_map(
 		fn ( $cell ) => trim( html_entity_decode( wp_strip_all_tags( $cell ), ENT_QUOTES, 'UTF-8' ) ),
@@ -256,11 +256,11 @@ function bz_row_cells( $row ) {
 /**
  * Today's hours from the first opening-hours table in $html, or null when it has no row for today.
  */
-function bz_hours_today( $html ) {
+function bdc_hours_today( $html ) {
 	preg_match_all( '#<tr\b[^>]*>.*?</tr>#is', $html, $rows );
 	foreach ( $rows[0] as $row ) {
-		$cells = bz_row_cells( $row );
-		if ( count( $cells ) >= 2 && bz_today() === $cells[0] ) {
+		$cells = bdc_row_cells( $row );
+		if ( count( $cells ) >= 2 && bdc_today() === $cells[0] ) {
 			return $cells[1];
 		}
 	}
@@ -270,14 +270,14 @@ function bz_hours_today( $html ) {
 /**
  * Hours without a digit ("dzień prac wewnętrznych") or no row at all mean closed.
  */
-function bz_is_open( $hours ) {
+function bdc_is_open( $hours ) {
 	return null !== $hours && preg_match( '/\d/', $hours );
 }
 
 /**
  * Today's hours as shown: the table's own words, or "nieczynne" when there are none.
  */
-function bz_hours_label( $hours ) {
+function bdc_hours_label( $hours ) {
 	return null === $hours || '' === $hours ? 'nieczynne' : $hours;
 }
 
@@ -287,14 +287,14 @@ function bz_hours_label( $hours ) {
 add_filter(
 	'render_block_core/table',
 	function ( $content ) {
-		if ( ! str_contains( $content, 'bz-hours' ) ) {
+		if ( ! str_contains( $content, 'bdc-hours' ) ) {
 			return $content;
 		}
 		return preg_replace_callback(
 			'#<tr\b[^>]*>.*?</tr>#is',
 			function ( $match ) {
-				$cells = bz_row_cells( $match[0] );
-				if ( ! $cells || bz_today() !== $cells[0] ) {
+				$cells = bdc_row_cells( $match[0] );
+				if ( ! $cells || bdc_today() !== $cells[0] ) {
 					return $match[0];
 				}
 				$row = new WP_HTML_Tag_Processor( $match[0] );
@@ -314,15 +314,15 @@ add_filter(
 add_filter(
 	'render_block_core/details',
 	function ( $content, $block ) {
-		if ( ! str_contains( $block['attrs']['className'] ?? '', 'bz-hours-toggle' ) ) {
+		if ( ! str_contains( $block['attrs']['className'] ?? '', 'bdc-hours-toggle' ) ) {
 			return $content;
 		}
-		$hours = bz_hours_today( $content );
+		$hours = bdc_hours_today( $content );
 		return sprintf(
-			'<p class="bz-hours-today">Dziś (%s): <strong class="%s">%s</strong></p>',
-			esc_html( bz_today() ),
-			bz_is_open( $hours ) ? 'is-open' : 'is-closed',
-			esc_html( bz_hours_label( $hours ) )
+			'<p class="bdc-hours-today">Dziś (%s): <strong class="%s">%s</strong></p>',
+			esc_html( bdc_today() ),
+			bdc_is_open( $hours ) ? 'is-open' : 'is-closed',
+			esc_html( bdc_hours_label( $hours ) )
 		) . $content;
 	},
 	10,
@@ -335,7 +335,7 @@ add_filter(
  *
  * @return array<int, array{id: string, name: string, hours: ?string}>
  */
-function bz_branches_today() {
+function bdc_branches_today() {
 	static $branches = null;
 	if ( null !== $branches ) {
 		return $branches;
@@ -357,7 +357,7 @@ function bz_branches_today() {
 					$branches[] = array(
 						'id'    => $id,
 						'name'  => trim( wp_strip_all_tags( $heading['innerHTML'] ) ),
-						'hours' => bz_hours_today( render_block( $block ) ),
+						'hours' => bdc_hours_today( render_block( $block ) ),
 					);
 					continue;
 				}
@@ -371,43 +371,43 @@ function bz_branches_today() {
 }
 
 /**
- * [bz_dzisiaj]: the "Dziś jesteśmy otwarci" bar, with today's hours of every
+ * [bdc_dzisiaj]: the "Dziś jesteśmy otwarci" bar, with today's hours of every
  * branch, each linking to its section further down the page.
  */
 add_shortcode(
-	'bz_dzisiaj',
+	'bdc_dzisiaj',
 	function () {
-		$branches = bz_branches_today();
-		$open     = array_filter( $branches, fn ( $branch ) => bz_is_open( $branch['hours'] ) );
+		$branches = bdc_branches_today();
+		$open     = array_filter( $branches, fn ( $branch ) => bdc_is_open( $branch['hours'] ) );
 
 		if ( ! $branches ) {
-			return '<p class="bz-today__label has-large-font-size">Godziny otwarcia wszystkich filii:</p><p><a class="bz-today__value" href="/kontakt/">zobacz godziny otwarcia</a></p>';
+			return '<p class="bdc-today__label has-large-font-size">Godziny otwarcia wszystkich filii:</p><p><a class="bdc-today__value" href="/kontakt/">zobacz godziny otwarcia</a></p>';
 		}
 		if ( ! $open ) {
 			// "Dziś (środa) wszystkie filie są nieczynne (dzień prac wewnętrznych)."
-			$reasons = array_unique( array_map( fn ( $branch ) => bz_hours_label( $branch['hours'] ), $branches ) );
+			$reasons = array_unique( array_map( fn ( $branch ) => bdc_hours_label( $branch['hours'] ), $branches ) );
 			$reason  = 1 === count( $reasons ) && 'nieczynne' !== $reasons[0] ? ' (' . $reasons[0] . ')' : '';
 			return sprintf(
-				'<p class="bz-today__label has-large-font-size">Dziś (%s) wszystkie filie są nieczynne%s.</p><p><a href="#filie">Godziny otwarcia filii</a></p>',
-				esc_html( bz_today() ),
+				'<p class="bdc-today__label has-large-font-size">Dziś (%s) wszystkie filie są nieczynne%s.</p><p><a href="#filie">Godziny otwarcia filii</a></p>',
+				esc_html( bdc_today() ),
 				esc_html( $reason )
 			);
 		}
 
 		$items = '';
 		foreach ( $branches as $branch ) {
-			$is_open = bz_is_open( $branch['hours'] );
+			$is_open = bdc_is_open( $branch['hours'] );
 			$items  .= sprintf(
 				'<li><a href="#%s">%s: <strong class="%s">%s</strong></a></li>',
 				esc_attr( $branch['id'] ),
 				esc_html( $branch['name'] ),
 				$is_open ? 'is-open' : 'is-closed',
-				esc_html( bz_hours_label( $branch['hours'] ) )
+				esc_html( bdc_hours_label( $branch['hours'] ) )
 			);
 		}
 		return sprintf(
-			'<p class="bz-today__label has-large-font-size">Dziś (%s) jesteśmy otwarci:</p><ul class="bz-today__list">%s</ul>',
-			esc_html( bz_today() ),
+			'<p class="bdc-today__label has-large-font-size">Dziś (%s) jesteśmy otwarci:</p><ul class="bdc-today__list">%s</ul>',
+			esc_html( bdc_today() ),
 			$items
 		);
 	}
