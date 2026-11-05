@@ -26,7 +26,7 @@ for (const target of process.argv.slice(2)) {
         window.axe.run(document, {
           runOnly: { type: 'tag', values: tags },
           // Third-party map iframes are outside our control.
-          exclude: [['.bz-map iframe']],
+          exclude: [['.bdc-map iframe']],
         }),
       tags,
     );

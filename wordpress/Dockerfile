@@ -51,7 +51,7 @@ RUN rm -rf /usr/src/wordpress/wp-content/plugins/akismet /usr/src/wordpress/wp-c
 COPY --from=fetch /fetch/out/plugins/ /usr/src/wordpress/wp-content/plugins/
 COPY --from=fetch /fetch/out/languages/ /usr/src/wordpress/wp-content/languages/
 COPY mu-plugins/ /usr/src/wordpress/wp-content/mu-plugins/
-COPY theme/biblioteka-zukowo/ /usr/src/wordpress/wp-content/themes/biblioteka-zukowo/
+COPY theme/biblioteka-dostepna-cyfrowo/ /usr/src/wordpress/wp-content/themes/biblioteka-dostepna-cyfrowo/
 
 # The entrypoint would generate this from wp-config-docker.php anyway (salts and DB
 # settings come from env). Shipping it lets WP-CLI run straight from /usr/src/wordpress
@@ -59,4 +59,4 @@ COPY theme/biblioteka-zukowo/ /usr/src/wordpress/wp-content/themes/biblioteka-zu
 RUN cp /usr/src/wordpress/wp-config-docker.php /usr/src/wordpress/wp-config.php
 
 # Setup and cleanup scripts for `wp eval-file`, outside the web root.
-COPY setup/ /opt/bz-setup/
+COPY setup/ /opt/setup/

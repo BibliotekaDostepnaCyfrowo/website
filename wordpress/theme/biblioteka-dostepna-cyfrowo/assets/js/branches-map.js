@@ -1,4 +1,4 @@
-// Turns each branch list (.bz-map[data-branches-map]) into one map with a pin per
+// Turns each branch list (.bdc-map[data-branches-map]) into one map with a pin per
 // branch. A pin's popup copies the address and contacts from the branch section
 // its link points to, so staff edit them in one place. Without JavaScript the
 // list of links stays.
@@ -13,7 +13,7 @@
 	function icon(isMain) {
 		var size = isMain ? [36, 50] : [30, 42];
 		return L.divIcon({
-			className: 'bz-pin' + (isMain ? ' bz-pin--main' : ''),
+			className: 'bdc-pin' + (isMain ? ' bdc-pin--main' : ''),
 			html: pin,
 			iconSize: size,
 			iconAnchor: [size[0] / 2, size[1]],
@@ -30,25 +30,25 @@
 
 	function popup(name, section, lat, lon) {
 		var box = document.createElement('div');
-		box.className = 'bz-map__popup';
+		box.className = 'bdc-map__popup';
 
 		var title = document.createElement('p');
-		title.className = 'bz-map__name';
+		title.className = 'bdc-map__name';
 		title.textContent = name;
 		box.appendChild(title);
 
 		if (section) {
-			section.querySelectorAll(':scope > p:not(.bz-hours-today)').forEach(function (p) {
+			section.querySelectorAll(':scope > p:not(.bdc-hours-today)').forEach(function (p) {
 				box.appendChild(p.cloneNode(true));
 			});
 		}
 
 		// The branch's "Dziś (…): …" line, rendered by functions.php.
-		var today = section && section.querySelector('.bz-hours-today');
+		var today = section && section.querySelector('.bdc-hours-today');
 		if (today) box.appendChild(today.cloneNode(true));
 
 		var links = document.createElement('p');
-		links.className = 'bz-map__links';
+		links.className = 'bdc-map__links';
 		if (section) {
 			// Jumps to the branch and opens its opening-hours toggle.
 			var toHours = link('#' + section.id, 'Godziny otwarcia');
@@ -65,12 +65,12 @@
 		return box;
 	}
 
-	document.querySelectorAll('.bz-map[data-branches-map]').forEach(function (box) {
+	document.querySelectorAll('.bdc-map[data-branches-map]').forEach(function (box) {
 		var items = box.querySelectorAll('li[data-lat][data-lon]');
 		if (!items.length) return;
 
 		var canvas = document.createElement('div');
-		canvas.className = 'bz-map__canvas';
+		canvas.className = 'bdc-map__canvas';
 		box.insertBefore(canvas, box.firstChild);
 
 		var map = L.map(canvas, {

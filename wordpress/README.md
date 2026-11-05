@@ -10,14 +10,14 @@ Everything runs in Docker. Nothing needs to be installed on your machine.
 
 ```
 wordpress/
-├── compose.yml                 local environment (WordPress, MariaDB, WP-CLI, screenshots)
-├── theme/biblioteka-zukowo/    the block theme: theme.json, templates, parts, patterns
-├── setup/setup.php             idempotent site setup (settings, pages, editable blocks, example content)
-├── setup/clean-content.php     idempotent cleanup of imported content
-├── mu-plugins/bz-smtp.php      sends mail through SMTP_* env (no-op when unset)
-├── Dockerfile, docker/         the production image
-├── tools/                      screenshots, block validation, accessibility check
-└── import/                     WordPress export files (gitignored, contains site content)
+├── compose.yml                           local environment (WordPress, MariaDB, WP-CLI, screenshots)
+├── theme/biblioteka-dostepna-cyfrowo/    the block theme: theme.json, templates, parts, patterns
+├── setup/setup.php                       idempotent site setup (settings, pages, editable blocks, example content)
+├── setup/clean-content.php               idempotent cleanup of imported content
+├── mu-plugins/smtp.php                   sends mail through SMTP_* env (no-op when unset)
+├── Dockerfile, docker/                   the production image
+├── tools/                                screenshots, block validation, accessibility check
+└── import/                               WordPress export files (gitignored, contains site content)
 ```
 
 ## Local environment
@@ -43,7 +43,7 @@ docker compose run --rm cli wp core install --url=http://localhost:8088 \
   --admin_email=admin@example.test --skip-email
 docker compose run --rm cli wp post delete 1 2 3 --force   # sample content of a fresh install
 docker compose run --rm cli wp language core install pl_PL --activate
-docker compose run --rm cli wp theme activate biblioteka-zukowo
+docker compose run --rm cli wp theme activate biblioteka-dostepna-cyfrowo
 docker compose run --rm cli wp eval-file /setup/setup.php
 ```
 
@@ -70,7 +70,7 @@ docker compose run --rm cli wp post delete 1 2 3 --force   # sample content of a
 docker compose run --rm cli wp language core install pl_PL --activate
 docker compose run --rm cli wp plugin install wordpress-importer --activate
 docker compose run --rm cli wp import /import/export.xml --authors=skip
-docker compose run --rm cli wp theme activate biblioteka-zukowo
+docker compose run --rm cli wp theme activate biblioteka-dostepna-cyfrowo
 docker compose run --rm cli wp eval-file /setup/setup.php
 docker compose run --rm cli wp eval-file /setup/clean-content.php
 ```
@@ -92,11 +92,11 @@ with Facebook posts) with real emoji characters and strips stray forms from post
   - *Partnerzy*: partner logos
   - *Stopka: dane kontaktowe* and *Stopka: dokumenty i linki*
 
-  Templates include them with `[bz_wzorzec slug="…"]`, so theme files never depend
+  Templates include them with `[bdc_wzorzec slug="…"]`, so theme files never depend
   on database IDs. `setup/setup.php` creates them once and never overwrites them.
 - **Today's opening hours** are worked out in `functions.php` when the page is
   rendered (no JavaScript): the "Dziś jesteśmy otwarci" bar on the home page
-  (`[bz_dzisiaj]`) shows each branch's hours for today, every branch shows a
+  (`[bdc_dzisiaj]`) shows each branch's hours for today, every branch shows a
   "Dziś: …" line above its *Godziny otwarcia* toggle, and today's row in the
   table is highlighted. They are read from each branch's table in *Filie*, whose
   first column must be the Polish day name; a missing day or hours without a digit
@@ -119,7 +119,7 @@ with Facebook posts) with real emoji characters and strips stray forms from post
 - **Search** in the header: a slim field on wide screens, a magnifier that opens
   the field over the bar on narrower ones (core's search block, no plugin).
 - **News list view**: /aktualnosci/ and search results have a grid / list switch
-  (pattern `news-view-switch`, for any query block with the `bz-news` class). The choice is kept in
+  (pattern `news-view-switch`, for any query block with the `bdc-news` class). The choice is kept in
   the visitor's browser (localStorage) and applied in `<head>` before the page
   paints (`functions.php`, `assets/js/news-view.js`), so cached pages work.
 - **Theme version**: bump `Version` in `style.css` when adding a pattern file.
@@ -147,7 +147,7 @@ docker compose run --rm browser screenshot.mjs /shots/<folder> home=http://local
 
 `Dockerfile` builds the image the cluster runs. Everything except uploads and the
 database comes from it: core, the theme, Polish translations, WP-CLI, the
-(inactive) importer and `bz-smtp.php`. Setup scripts are in `/opt/bz-setup`.
+(inactive) importer and `smtp.php`. Setup scripts are in `/opt/setup`.
 Every version and download is pinned; bump them in the Dockerfile together with
 `compose.yml`.
 
@@ -165,5 +165,6 @@ kubectl -n biblioteka-staging exec deploy/biblioteka-staging -- wp <command>
 
 Runtime settings come from the environment: database and salts from a Secret,
 `WP_HOME`, `DISABLE_WP_CRON` and the rest through `WORDPRESS_CONFIG_EXTRA`,
-`BZ_NOINDEX=1` for the `X-Robots-Tag: noindex, nofollow` header on staging, and
+`NOINDEX=1` for the `X-Robots-Tag: noindex, nofollow` header on staging (the old
+`BZ_NOINDEX=1` still works), and
 `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` for mail.

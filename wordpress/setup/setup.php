@@ -53,16 +53,16 @@ $branches = array(
 	),
 );
 
-function bz_log( $message ) {
+function bdc_log( $message ) {
 	WP_CLI::log( $message );
 }
 
-function bz_ensure_page( $slug, $title, $content = '' ) {
+function bdc_ensure_page( $slug, $title, $content = '' ) {
 	$page = get_page_by_path( $slug );
 	if ( $page ) {
 		return $page->ID;
 	}
-	bz_log( "Creating page /$slug/" );
+	bdc_log( "Creating page /$slug/" );
 	return wp_insert_post(
 		array(
 			'post_type'    => 'page',
@@ -74,12 +74,12 @@ function bz_ensure_page( $slug, $title, $content = '' ) {
 	);
 }
 
-function bz_ensure_pattern( $slug, $title, $content ) {
+function bdc_ensure_pattern( $slug, $title, $content ) {
 	$existing = get_page_by_path( $slug, OBJECT, 'wp_block' );
 	if ( $existing ) {
 		return $existing->ID;
 	}
-	bz_log( "Creating synced pattern '$title'" );
+	bdc_log( "Creating synced pattern '$title'" );
 	return wp_insert_post(
 		array(
 			'post_type'    => 'wp_block',
@@ -91,7 +91,7 @@ function bz_ensure_pattern( $slug, $title, $content ) {
 	);
 }
 
-function bz_contact_links( $branch ) {
+function bdc_contact_links( $branch ) {
 	$links = array();
 	foreach ( $branch['phones'] as $phone ) {
 		$links[] = sprintf( '<a href="tel:%s">%s</a>', preg_replace( '/[^+\d]/', '', $phone ), esc_html( $phone ) );
@@ -107,7 +107,7 @@ function bz_contact_links( $branch ) {
  * assets/js/branches-map.js turns it into the map and fills each pin's popup
  * from the branch section the link points to.
  */
-function bz_branches_map( $branches ) {
+function bdc_branches_map( $branches ) {
 	$items = '';
 	foreach ( $branches as $branch ) {
 		$items .= sprintf(
@@ -119,23 +119,23 @@ function bz_branches_map( $branches ) {
 			esc_html( $branch['name'] )
 		);
 	}
-	return "<!-- wp:html -->\n<div class=\"bz-map\" data-branches-map><ul class=\"bz-map__list\">$items</ul></div>\n<!-- /wp:html -->\n";
+	return "<!-- wp:html -->\n<div class=\"bdc-map\" data-branches-map><ul class=\"bdc-map__list\">$items</ul></div>\n<!-- /wp:html -->\n";
 }
 
-function bz_branch_heading( $branch ) {
+function bdc_branch_heading( $branch ) {
 	return "<!-- wp:heading {\"level\":3} -->\n<h3 class=\"wp-block-heading\">" . esc_html( $branch['name'] ) . "</h3>\n<!-- /wp:heading -->\n";
 }
 
 // The branch's own catalog on szukamksiążki.pl.
-function bz_branch_catalog( $branch ) {
-	return "<!-- wp:paragraph {\"className\":\"bz-more\"} -->\n<p class=\"bz-more\"><a href=\"" . esc_url( $branch['catalog'] ) . "\">Katalog online</a></p>\n<!-- /wp:paragraph -->\n";
+function bdc_branch_catalog( $branch ) {
+	return "<!-- wp:paragraph {\"className\":\"bdc-more\"} -->\n<p class=\"bdc-more\"><a href=\"" . esc_url( $branch['catalog'] ) . "\">Katalog online</a></p>\n<!-- /wp:paragraph -->\n";
 }
 
-function bz_branch_details( $branch, $hours_ref ) {
+function bdc_branch_details( $branch, $hours_ref ) {
 	return "<!-- wp:paragraph -->\n<p>" . esc_html( $branch['street'] ) . '<br>' . esc_html( $branch['city'] ) . "</p>\n<!-- /wp:paragraph -->\n"
-		. "<!-- wp:paragraph -->\n<p>" . bz_contact_links( $branch ) . "</p>\n<!-- /wp:paragraph -->\n"
-		. bz_branch_catalog( $branch )
-		. "<!-- wp:details {\"className\":\"bz-hours-toggle\"} -->\n<details class=\"wp-block-details bz-hours-toggle\"><summary>Godziny otwarcia</summary>"
+		. "<!-- wp:paragraph -->\n<p>" . bdc_contact_links( $branch ) . "</p>\n<!-- /wp:paragraph -->\n"
+		. bdc_branch_catalog( $branch )
+		. "<!-- wp:details {\"className\":\"bdc-hours-toggle\"} -->\n<details class=\"wp-block-details bdc-hours-toggle\"><summary>Godziny otwarcia</summary>"
 		. "<!-- wp:block {\"ref\":$hours_ref} /-->"
 		. "</details>\n<!-- /wp:details -->\n";
 }
@@ -160,26 +160,26 @@ foreach ( get_option( 'sticky_posts', array() ) as $sticky_id ) {
 	$sticky = get_post( $sticky_id );
 	if ( ! $sticky || strtotime( $sticky->post_date_gmt ) < strtotime( '-1 year' ) ) {
 		unstick_post( $sticky_id );
-		bz_log( 'Unpinned old post: ' . ( $sticky ? $sticky->post_title : "#$sticky_id" ) );
+		bdc_log( 'Unpinned old post: ' . ( $sticky ? $sticky->post_title : "#$sticky_id" ) );
 	}
 }
 
-$front = bz_ensure_page( 'strona-glowna', 'Strona główna' );
-$about = bz_ensure_page(
+$front = bdc_ensure_page( 'strona-glowna', 'Strona główna' );
+$about = bdc_ensure_page(
 	'nasza-biblioteka',
 	'Nasza biblioteka',
 	'<!-- wp:paragraph -->
 <p>Tu biblioteka przedstawia swoją historię, misję i zespół. To przykładowa treść: zmień ją w panelu, w Strony → Nasza biblioteka.</p>
 <!-- /wp:paragraph -->'
 );
-$a11y  = bz_ensure_page(
+$a11y  = bdc_ensure_page(
 	'deklaracja-dostepnosci',
 	'Deklaracja dostępności',
 	'<!-- wp:paragraph -->
 <p>Każdy podmiot publiczny publikuje deklarację dostępności swojej strony internetowej, zgodnie z ustawą z dnia 4 kwietnia 2019 r. o dostępności cyfrowej stron internetowych i aplikacji mobilnych podmiotów publicznych. To miejsce na jej treść.</p>
 <!-- /wp:paragraph -->'
 );
-$news  = bz_ensure_page( 'aktualnosci', 'Aktualności' );
+$news  = bdc_ensure_page( 'aktualnosci', 'Aktualności' );
 update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', $front );
 update_option( 'page_for_posts', $news );
@@ -192,7 +192,7 @@ if ( ! get_posts( array( 'post_type' => 'post', 'post_status' => 'any', 'numberp
 		array( 'Ferie z biblioteką', 'Przez dwa tygodnie ferii czekają na dzieci warsztaty plastyczne, gry planszowe i głośne czytanie.' ),
 	);
 	foreach ( $news_items as $i => list( $title, $text ) ) {
-		bz_log( "Creating example post '$title'" );
+		bdc_log( "Creating example post '$title'" );
 		wp_insert_post(
 			array(
 				'post_status'  => 'publish',
@@ -222,17 +222,17 @@ if ( ! get_theme_mod( 'custom_logo' ) ) {
 	} else {
 		update_post_meta( $logo, '_wp_attachment_image_alt', "$library – strona główna" );
 		set_theme_mod( 'custom_logo', $logo );
-		bz_log( 'Logo set' );
+		bdc_log( 'Logo set' );
 	}
 }
 
 // --- Synced patterns (editable by staff under "Stałe treści") ------------------
 
-bz_ensure_pattern(
+bdc_ensure_pattern(
 	'powitanie',
 	'Strona główna: powitanie',
-	'<!-- wp:paragraph {"className":"bz-kicker"} -->
-<p class="bz-kicker">Przykładowa strona biblioteki publicznej</p>
+	'<!-- wp:paragraph {"className":"bdc-kicker"} -->
+<p class="bdc-kicker">Przykładowa strona biblioteki publicznej</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":1} -->
@@ -254,11 +254,11 @@ bz_ensure_pattern(
 <!-- /wp:buttons -->'
 );
 
-bz_ensure_pattern(
+bdc_ensure_pattern(
 	'liczby',
 	'Strona główna: biblioteka w liczbach',
-	'<!-- wp:group {"className":"bz-stats","style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"grid","columnCount":4,"minimumColumnWidth":null}} -->
-<div class="wp-block-group bz-stats"><!-- wp:paragraph -->
+	'<!-- wp:group {"className":"bdc-stats","style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"grid","columnCount":4,"minimumColumnWidth":null}} -->
+<div class="wp-block-group bdc-stats"><!-- wp:paragraph -->
 <p><strong>3</strong> placówki biblioteczne</p>
 <!-- /wp:paragraph -->
 
@@ -275,35 +275,35 @@ bz_ensure_pattern(
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:paragraph {"align":"center","className":"bz-more"} -->
-<p class="has-text-align-center bz-more"><a href="/nasza-biblioteka/">Poznaj historię i misję biblioteki</a></p>
+<!-- wp:paragraph {"align":"center","className":"bdc-more"} -->
+<p class="has-text-align-center bdc-more"><a href="/nasza-biblioteka/">Poznaj historię i misję biblioteki</a></p>
 <!-- /wp:paragraph -->'
 );
 
-$hours_ref = bz_ensure_pattern(
+$hours_ref = bdc_ensure_pattern(
 	'godziny-otwarcia',
 	'Godziny otwarcia',
-	'<!-- wp:table {"className":"bz-hours"} -->
-<figure class="wp-block-table bz-hours"><table class="has-fixed-layout"><tbody><tr><td>Poniedziałek</td><td>10.00 – 18.00</td></tr><tr><td>Wtorek</td><td>9.00 – 17.00</td></tr><tr><td>Środa</td><td>dzień prac wewnętrznych</td></tr><tr><td>Czwartek</td><td>8.00 – 16.00</td></tr><tr><td>Piątek</td><td>8.00 – 16.00</td></tr></tbody></table></figure>
+	'<!-- wp:table {"className":"bdc-hours"} -->
+<figure class="wp-block-table bdc-hours"><table class="has-fixed-layout"><tbody><tr><td>Poniedziałek</td><td>10.00 – 18.00</td></tr><tr><td>Wtorek</td><td>9.00 – 17.00</td></tr><tr><td>Środa</td><td>dzień prac wewnętrznych</td></tr><tr><td>Czwartek</td><td>8.00 – 16.00</td></tr><tr><td>Piątek</td><td>8.00 – 16.00</td></tr></tbody></table></figure>
 <!-- /wp:table -->'
 );
 
 $main   = $branches[0];
 $filie  = "<!-- wp:columns {\"verticalAlignment\":\"center\",\"style\":{\"spacing\":{\"blockGap\":{\"left\":\"var:preset|spacing|60\"}}}} -->\n<div class=\"wp-block-columns are-vertically-aligned-center\">";
-$filie .= "<!-- wp:column {\"verticalAlignment\":\"center\"} -->\n<div id=\"{$main['id']}\" class=\"wp-block-column is-vertically-aligned-center\">" . bz_branch_heading( $main ) . bz_branch_details( $main, $hours_ref ) . "</div>\n<!-- /wp:column -->\n";
-$filie .= "<!-- wp:column {\"verticalAlignment\":\"center\"} -->\n<div class=\"wp-block-column is-vertically-aligned-center\">" . bz_branches_map( $branches ) . "</div>\n<!-- /wp:column -->\n";
+$filie .= "<!-- wp:column {\"verticalAlignment\":\"center\"} -->\n<div id=\"{$main['id']}\" class=\"wp-block-column is-vertically-aligned-center\">" . bdc_branch_heading( $main ) . bdc_branch_details( $main, $hours_ref ) . "</div>\n<!-- /wp:column -->\n";
+$filie .= "<!-- wp:column {\"verticalAlignment\":\"center\"} -->\n<div class=\"wp-block-column is-vertically-aligned-center\">" . bdc_branches_map( $branches ) . "</div>\n<!-- /wp:column -->\n";
 $filie .= "</div>\n<!-- /wp:columns -->\n";
 $filie .= "<!-- wp:group {\"style\":{\"spacing\":{\"blockGap\":\"var:preset|spacing|50\",\"margin\":{\"top\":\"var:preset|spacing|60\"}}},\"layout\":{\"type\":\"grid\",\"columnCount\":2,\"minimumColumnWidth\":\"20rem\"}} -->\n<div class=\"wp-block-group\" style=\"margin-top:var(--wp--preset--spacing--60)\">";
 foreach ( array_slice( $branches, 1 ) as $branch ) {
-	$filie .= "<!-- wp:group {\"className\":\"bz-branch\",\"style\":{\"spacing\":{\"padding\":{\"top\":\"var:preset|spacing|40\",\"bottom\":\"var:preset|spacing|50\",\"left\":\"var:preset|spacing|40\",\"right\":\"var:preset|spacing|40\"}}},\"layout\":{\"type\":\"flex\",\"orientation\":\"vertical\",\"justifyContent\":\"center\"}} -->\n"
-		. "<div id=\"{$branch['id']}\" class=\"wp-block-group bz-branch\" style=\"padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)\">"
-		. bz_branch_heading( $branch ) . bz_branch_details( $branch, $hours_ref )
+	$filie .= "<!-- wp:group {\"className\":\"bdc-branch\",\"style\":{\"spacing\":{\"padding\":{\"top\":\"var:preset|spacing|40\",\"bottom\":\"var:preset|spacing|50\",\"left\":\"var:preset|spacing|40\",\"right\":\"var:preset|spacing|40\"}}},\"layout\":{\"type\":\"flex\",\"orientation\":\"vertical\",\"justifyContent\":\"center\"}} -->\n"
+		. "<div id=\"{$branch['id']}\" class=\"wp-block-group bdc-branch\" style=\"padding-top:var(--wp--preset--spacing--40);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--40)\">"
+		. bdc_branch_heading( $branch ) . bdc_branch_details( $branch, $hours_ref )
 		. "</div>\n<!-- /wp:group -->\n";
 }
 $filie .= "</div>\n<!-- /wp:group -->";
-$filie_ref = bz_ensure_pattern( 'filie', 'Filie (adresy i mapa)', $filie );
+$filie_ref = bdc_ensure_pattern( 'filie', 'Filie (adresy i mapa)', $filie );
 
-bz_ensure_pattern(
+bdc_ensure_pattern(
 	'partnerzy',
 	'Partnerzy',
 	'<!-- wp:paragraph {"align":"center"} -->
@@ -311,11 +311,11 @@ bz_ensure_pattern(
 <!-- /wp:paragraph -->'
 );
 
-bz_ensure_pattern(
+bdc_ensure_pattern(
 	'stopka-kontakt',
 	'Stopka: dane kontaktowe',
 	'<!-- wp:paragraph {"fontSize":"small","style":{"typography":{"fontWeight":"600"}}} -->
-<p class="has-small-font-size" style="font-weight:600">' . esc_html( $library ) . '<br>' . esc_html( $main['street'] ) . '<br>' . esc_html( $main['city'] ) . '<br>' . bz_contact_links( $main ) . '</p>
+<p class="has-small-font-size" style="font-weight:600">' . esc_html( $library ) . '<br>' . esc_html( $main['street'] ) . '<br>' . esc_html( $main['city'] ) . '<br>' . bdc_contact_links( $main ) . '</p>
 <!-- /wp:paragraph -->'
 );
 
@@ -327,15 +327,15 @@ $list = '';
 foreach ( $items as list( $url, $label ) ) {
 	$list .= '<!-- wp:list-item --><li><a href="' . esc_url( $url ) . '">' . esc_html( $label ) . "</a></li><!-- /wp:list-item -->\n";
 }
-bz_ensure_pattern( 'stopka-linki', 'Stopka: dokumenty i linki', "<!-- wp:list -->\n<ul class=\"wp-block-list\">$list</ul>\n<!-- /wp:list -->" );
+bdc_ensure_pattern( 'stopka-linki', 'Stopka: dokumenty i linki', "<!-- wp:list -->\n<ul class=\"wp-block-list\">$list</ul>\n<!-- /wp:list -->" );
 
 // The contact page shows the same branch details as the home page. Page content
 // lives in the database, so it can reference the pattern by ID directly.
 $contact = get_page_by_path( 'kontakt' );
 if ( ! $contact ) {
-	bz_ensure_page( 'kontakt', 'Kontakt', "<!-- wp:block {\"ref\":$filie_ref} /-->" );
+	bdc_ensure_page( 'kontakt', 'Kontakt', "<!-- wp:block {\"ref\":$filie_ref} /-->" );
 } elseif ( ! has_block( 'core/block', $contact ) ) {
-	bz_log( 'Replacing /kontakt/ content with the branches pattern (old content kept as a revision)' );
+	bdc_log( 'Replacing /kontakt/ content with the branches pattern (old content kept as a revision)' );
 	wp_save_post_revision( $contact->ID );
 	wp_update_post(
 		array(
@@ -351,7 +351,7 @@ $catalogs = '';
 foreach ( $branches as $branch ) {
 	$catalogs .= '<!-- wp:list-item --><li><a href="' . esc_url( $branch['catalog'] ) . '">' . esc_html( $branch['name'] ) . "</a></li><!-- /wp:list-item -->\n";
 }
-bz_ensure_page(
+bdc_ensure_page(
 	'katalog-online',
 	'Katalog online',
 	'<!-- wp:paragraph -->

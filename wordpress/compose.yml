@@ -33,7 +33,7 @@ services:
         define('WP_ENVIRONMENT_TYPE', 'local');
     volumes:
       - wp:/var/www/html
-      - ./theme/biblioteka-zukowo:/var/www/html/wp-content/themes/biblioteka-zukowo:ro
+      - ./theme/biblioteka-dostepna-cyfrowo:/var/www/html/wp-content/themes/biblioteka-dostepna-cyfrowo:ro
 
   # One-off WP-CLI commands: docker compose run --rm cli wp <command>
   cli:
@@ -46,7 +46,7 @@ services:
       WP_CLI_PHP_ARGS: -d memory_limit=1024M
     volumes:
       - wp:/var/www/html
-      - ./theme/biblioteka-zukowo:/var/www/html/wp-content/themes/biblioteka-zukowo:ro
+      - ./theme/biblioteka-dostepna-cyfrowo:/var/www/html/wp-content/themes/biblioteka-dostepna-cyfrowo:ro
       - ./setup:/setup:ro
       - ./import:/import
 
@@ -60,7 +60,7 @@ services:
     profiles: [tools]
     volumes:
       - ../.context/shots:/shots
-      - ./theme/biblioteka-zukowo:/theme:ro
+      - ./theme/biblioteka-dostepna-cyfrowo:/theme:ro
 
 volumes:
   db:

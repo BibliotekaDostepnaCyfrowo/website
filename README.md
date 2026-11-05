@@ -9,4 +9,5 @@ up to commit `36d0036`.
 
 ## Credits
 
+- Theme: [Feature Forest sp. z o.o.](https://featureforest.eu)
 - Design: [Radosław Śmigielski](https://www.linkedin.com/in/rados%C5%82aw-%C5%9Bmigielski-895a73302/)
