@@ -1,10 +1,11 @@
 # Biblioteka Dostępna Cyfrowo on WordPress
 
-An example website for a public library, on WordPress. This folder holds
-everything that is ours: the theme, a setup script and the local development
-environment. Content (posts, pages, media) lives in WordPress, not in git; the
-setup script only seeds example content for a fictional library, which staff
-then replace.
+The WordPress theme for public library websites in the
+[Biblioteka Dostępna Cyfrowo](https://dostepnacyfrowo.pl) programme. This folder
+holds the theme, the setup scripts, the local development environment and the
+production image. Content (posts, pages, media) lives in WordPress, not in git;
+the setup script fills in either a real library's details (`library.json`) or
+example content for a fictional library, which staff then replace.
 
 Everything runs in Docker. Nothing needs to be installed on your machine.
 
