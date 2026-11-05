@@ -57,8 +57,9 @@ the script; everything it creates is ordinary content, edited in the admin.
 
 1. In the existing site's admin: Narzędzia → Eksport → Cała zawartość → Pobierz plik eksportu.
 2. Put the file in `wordpress/import/export.xml`.
-3. Put your library's name and branches in the data at the top of `setup/setup.php`;
-   otherwise the import gets the example library's name, branches and pages.
+3. Put your library's name, branches and opening hours in `wordpress/import/library.json`
+   (below) and run the setup with `-e BDC_LIBRARY_JSON=/import/library.json`; otherwise the
+   import gets the example library's name, branches and pages.
 4. Import it and run the setup (the import downloads all media from the old site, which can take an hour):
 
 ```bash
@@ -74,6 +75,26 @@ docker compose run --rm cli wp theme activate biblioteka-dostepna-cyfrowo
 docker compose run --rm cli wp eval-file /setup/setup.php
 docker compose run --rm cli wp eval-file /setup/clean-content.php
 ```
+
+`library.json` is the `library` object of a copy manifest from biblioteka-ops (`/kopie`),
+which german-lab's `scripts/biblioteka-copy.sh` writes for you:
+
+```json
+{
+  "name": "Gminna Biblioteka Publiczna w Żukowie",
+  "logo_url": "https://…/logo.png",
+  "hours": [{ "day": "Poniedziałek", "hours": "10.00 – 18.00" }],
+  "branches": [
+    { "id": "glowna", "name": "Biblioteka główna", "street": "ul. Gdańska 18", "city": "83-330 Żukowo",
+      "phones": ["…"], "emails": ["…"], "catalog": "https://…", "lat": 54.34, "lon": 18.36, "is_main": true }
+  ]
+}
+```
+
+`name` and `branches` (each with `id`, `name`, `street`, `city`) are required. The main
+branch (`is_main`, else the first) comes first, a branch without `lat`/`lon` is left off the
+map, one without `catalog` off the catalogue page, and `logo_url` (if any) becomes the logo.
+With a real library, the setup writes no example news and no example numbers or wording.
 
 `clean-content.php` replaces emoji images hotlinked from Facebook (copied along
 with Facebook posts) with real emoji characters and strips stray forms from posts.

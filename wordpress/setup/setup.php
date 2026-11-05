@@ -53,6 +53,70 @@ $branches = array(
 	),
 );
 
+// Opening hours, shared by every branch: one row per day.
+$hours = array(
+	array( 'Poniedziałek', '10.00 – 18.00' ),
+	array( 'Wtorek', '9.00 – 17.00' ),
+	array( 'Środa', 'dzień prac wewnętrznych' ),
+	array( 'Czwartek', '8.00 – 16.00' ),
+	array( 'Piątek', '8.00 – 16.00' ),
+);
+$logo_url = '';
+
+// A real library instead of the example: BDC_LIBRARY_JSON names a JSON file with the
+// `library` object of a copy manifest (biblioteka-ops, /kopie; written by german-lab's
+// scripts/biblioteka-copy.sh):
+//   {"name", "logo_url"?, "hours": [{"day", "hours"}],
+//    "branches": [{"id", "name", "street", "city", "phones", "emails", "catalog"?, "lat"?, "lon"?, "is_main"?}]}
+// The main branch (is_main, else the first) comes first. Without the variable, the
+// example library above is used.
+$is_example = true;
+$library_json = getenv( 'BDC_LIBRARY_JSON' );
+if ( $library_json ) {
+	if ( ! is_readable( $library_json ) ) {
+		WP_CLI::error( "BDC_LIBRARY_JSON: cannot read $library_json" );
+	}
+	$data = json_decode( file_get_contents( $library_json ), true );
+	if ( ! is_array( $data ) || empty( $data['name'] ) || empty( $data['branches'] ) || ! is_array( $data['branches'] ) ) {
+		WP_CLI::error( 'BDC_LIBRARY_JSON: needs "name" and a non-empty "branches" list' );
+	}
+	$library  = (string) $data['name'];
+	$logo_url = isset( $data['logo_url'] ) ? (string) $data['logo_url'] : '';
+	$branches = array();
+	foreach ( $data['branches'] as $i => $b ) {
+		foreach ( array( 'id', 'name', 'street', 'city' ) as $field ) {
+			if ( empty( $b[ $field ] ) ) {
+				WP_CLI::error( "BDC_LIBRARY_JSON: branches[$i] has no \"$field\"" );
+			}
+		}
+		$branches[] = array(
+			'id'      => sanitize_title( $b['id'] ),
+			'name'    => (string) $b['name'],
+			'street'  => (string) $b['street'],
+			'city'    => (string) $b['city'],
+			'phones'  => array_values( array_map( 'strval', (array) ( $b['phones'] ?? array() ) ) ),
+			'emails'  => array_values( array_map( 'strval', (array) ( $b['emails'] ?? array() ) ) ),
+			'catalog' => isset( $b['catalog'] ) ? (string) $b['catalog'] : '',
+			'lat'     => isset( $b['lat'], $b['lon'] ) ? (float) $b['lat'] : null,
+			'lon'     => isset( $b['lat'], $b['lon'] ) ? (float) $b['lon'] : null,
+			'is_main' => ! empty( $b['is_main'] ),
+		);
+	}
+	// Main branch first; with none marked, the first one is the main one.
+	usort( $branches, fn( $a, $b ) => (int) $b['is_main'] - (int) $a['is_main'] );
+	$branches[0]['is_main'] = true;
+	if ( ! empty( $data['hours'] ) && is_array( $data['hours'] ) ) {
+		$hours = array();
+		foreach ( $data['hours'] as $row ) {
+			if ( ! empty( $row['day'] ) && isset( $row['hours'] ) ) {
+				$hours[] = array( (string) $row['day'], (string) $row['hours'] );
+			}
+		}
+	}
+	$is_example = false;
+	WP_CLI::log( "Library from $library_json: $library, " . count( $branches ) . ' branches' );
+}
+
 function bdc_log( $message ) {
 	WP_CLI::log( $message );
 }
@@ -110,6 +174,9 @@ function bdc_contact_links( $branch ) {
 function bdc_branches_map( $branches ) {
 	$items = '';
 	foreach ( $branches as $branch ) {
+		if ( ! isset( $branch['lat'], $branch['lon'] ) ) {
+			continue;
+		}
 		$items .= sprintf(
 			'<li data-lat="%F" data-lon="%F"%s><a href="#%s">%s</a></li>',
 			$branch['lat'],
@@ -118,6 +185,10 @@ function bdc_branches_map( $branches ) {
 			esc_attr( $branch['id'] ),
 			esc_html( $branch['name'] )
 		);
+	}
+	// No branch with coordinates: no map, rather than an empty list.
+	if ( '' === $items ) {
+		return '';
 	}
 	return "<!-- wp:html -->\n<div class=\"bdc-map\" data-branches-map><ul class=\"bdc-map__list\">$items</ul></div>\n<!-- /wp:html -->\n";
 }
@@ -128,6 +199,9 @@ function bdc_branch_heading( $branch ) {
 
 // The branch's own catalog on szukamksiążki.pl.
 function bdc_branch_catalog( $branch ) {
+	if ( empty( $branch['catalog'] ) ) {
+		return '';
+	}
 	return "<!-- wp:paragraph {\"className\":\"bdc-more\"} -->\n<p class=\"bdc-more\"><a href=\"" . esc_url( $branch['catalog'] ) . "\">Katalog online</a></p>\n<!-- /wp:paragraph -->\n";
 }
 
@@ -184,8 +258,9 @@ update_option( 'show_on_front', 'page' );
 update_option( 'page_on_front', $front );
 update_option( 'page_for_posts', $news );
 
-// Example news, only on a site without any posts, so the news list isn't empty.
-if ( ! get_posts( array( 'post_type' => 'post', 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ) ) ) {
+// Example news, only for the example library on a site without any posts, so the news
+// list isn't empty. A real library's news come from its old site.
+if ( $is_example && ! get_posts( array( 'post_type' => 'post', 'post_status' => 'any', 'numberposts' => 1, 'fields' => 'ids' ) ) ) {
 	$news_items = array(
 		array( 'Spotkanie autorskie w bibliotece głównej', 'Zapraszamy na spotkanie z autorką książek dla dzieci. Wstęp wolny, liczba miejsc ograniczona.' ),
 		array( 'Nowości w księgozbiorze', 'Do naszych placówek trafiło ponad sto nowych tytułów: powieści, reportaże i książki dla najmłodszych.' ),
@@ -206,6 +281,16 @@ if ( ! get_posts( array( 'post_type' => 'post', 'post_status' => 'any', 'numberp
 
 // --- Logo ---------------------------------------------------------------------
 
+if ( ! get_theme_mod( 'custom_logo' ) && $logo_url ) {
+	$logo = media_sideload_image( $logo_url, 0, $library, 'id' );
+	if ( is_wp_error( $logo ) ) {
+		WP_CLI::warning( "Logo download from $logo_url failed: " . $logo->get_error_message() . '; using the theme\'s logo' );
+	} else {
+		update_post_meta( $logo, '_wp_attachment_image_alt', "$library – strona główna" );
+		set_theme_mod( 'custom_logo', $logo );
+		bdc_log( "Logo set from $logo_url" );
+	}
+}
 if ( ! get_theme_mod( 'custom_logo' ) ) {
 	$tmp = wp_tempnam( 'logo.png' );
 	copy( get_theme_file_path( 'assets/images/logo.png' ), $tmp );
@@ -232,7 +317,7 @@ bdc_ensure_pattern(
 	'powitanie',
 	'Strona główna: powitanie',
 	'<!-- wp:paragraph {"className":"bdc-kicker"} -->
-<p class="bdc-kicker">Przykładowa strona biblioteki publicznej</p>
+<p class="bdc-kicker">' . ( $is_example ? 'Przykładowa strona biblioteki publicznej' : 'Biblioteka publiczna' ) . '</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":1} -->
@@ -240,7 +325,9 @@ bdc_ensure_pattern(
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"fontSize":"large"} -->
-<p class="has-large-font-size">Wzór strony internetowej biblioteki, dostępnej dla każdego: zgodnej z WCAG 2.2, czytelnej na telefonie i prostej w prowadzeniu. Adresy, godziny i liczby na tej stronie są przykładowe.</p>
+<p class="has-large-font-size">' . ( $is_example
+		? 'Wzór strony internetowej biblioteki, dostępnej dla każdego: zgodnej z WCAG 2.2, czytelnej na telefonie i prostej w prowadzeniu. Adresy, godziny i liczby na tej stronie są przykładowe.'
+		: 'Zapraszamy do naszych placówek. Sprawdź godziny otwarcia, nowości i wydarzenia.' ) . '</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons -->
@@ -254,6 +341,26 @@ bdc_ensure_pattern(
 <!-- /wp:buttons -->'
 );
 
+$branch_count = count( $branches );
+$branch_word  = 1 === $branch_count ? 'placówka biblioteczna' : ( $branch_count % 10 >= 2 && $branch_count % 10 <= 4 && ( $branch_count % 100 < 12 || $branch_count % 100 > 14 ) ? 'placówki biblioteczne' : 'placówek bibliotecznych' );
+if ( ! $is_example ) {
+	bdc_ensure_pattern(
+		'liczby',
+		'Strona główna: biblioteka w liczbach',
+		'<!-- wp:group {"className":"bdc-stats","style":{"spacing":{"blockGap":"var:preset|spacing|50"}},"layout":{"type":"grid","columnCount":4,"minimumColumnWidth":null}} -->
+<div class="wp-block-group bdc-stats"><!-- wp:paragraph -->
+<p><strong>' . $branch_count . '</strong> ' . $branch_word . '</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:paragraph {"align":"center","className":"bdc-more"} -->
+<p class="has-text-align-center bdc-more"><a href="/nasza-biblioteka/">Poznaj historię i misję biblioteki</a></p>
+<!-- /wp:paragraph -->'
+	);
+}
+
+// The example library's numbers. For a real library the pattern exists by now, so this
+// leaves it alone.
 bdc_ensure_pattern(
 	'liczby',
 	'Strona główna: biblioteka w liczbach',
@@ -284,7 +391,7 @@ $hours_ref = bdc_ensure_pattern(
 	'godziny-otwarcia',
 	'Godziny otwarcia',
 	'<!-- wp:table {"className":"bdc-hours"} -->
-<figure class="wp-block-table bdc-hours"><table class="has-fixed-layout"><tbody><tr><td>Poniedziałek</td><td>10.00 – 18.00</td></tr><tr><td>Wtorek</td><td>9.00 – 17.00</td></tr><tr><td>Środa</td><td>dzień prac wewnętrznych</td></tr><tr><td>Czwartek</td><td>8.00 – 16.00</td></tr><tr><td>Piątek</td><td>8.00 – 16.00</td></tr></tbody></table></figure>
+<figure class="wp-block-table bdc-hours"><table class="has-fixed-layout"><tbody>' . implode( '', array_map( fn( $row ) => '<tr><td>' . esc_html( $row[0] ) . '</td><td>' . esc_html( $row[1] ) . '</td></tr>', $hours ) ) . '</tbody></table></figure>
 <!-- /wp:table -->'
 );
 
@@ -349,18 +456,27 @@ if ( ! $contact ) {
 // after that it's an ordinary page staff can edit.
 $catalogs = '';
 foreach ( $branches as $branch ) {
+	if ( empty( $branch['catalog'] ) ) {
+		continue;
+	}
 	$catalogs .= '<!-- wp:list-item --><li><a href="' . esc_url( $branch['catalog'] ) . '">' . esc_html( $branch['name'] ) . "</a></li><!-- /wp:list-item -->\n";
 }
-bdc_ensure_page(
-	'katalog-online',
-	'Katalog online',
-	'<!-- wp:paragraph -->
+// The header and footer always link here, so the page exists even without catalogues.
+$catalog_intro = '' === $catalogs
+	? '<!-- wp:paragraph -->
+<p>Zapytaj w swojej placówce, jak sprawdzić, czy książka jest w zbiorach biblioteki.</p>
+<!-- /wp:paragraph -->'
+	: '<!-- wp:paragraph -->
 <p>Każda nasza placówka ma własny katalog w serwisie SzukamKsiążki.pl. Wybierz placówkę, aby sprawdzić, czy książka jest w jej zbiorach.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:list {"fontSize":"large"} -->
 <ul class="wp-block-list has-large-font-size">' . $catalogs . '</ul>
-<!-- /wp:list -->
+<!-- /wp:list -->';
+bdc_ensure_page(
+	'katalog-online',
+	'Katalog online',
+	$catalog_intro . '
 
 <!-- wp:paragraph -->
 <p>Adresy i godziny otwarcia placówek są na stronie <a href="/kontakt/">Kontakt</a>.</p>
