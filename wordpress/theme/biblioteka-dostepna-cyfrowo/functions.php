@@ -561,7 +561,7 @@ add_action(
 	'wp_footer',
 	function () {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( ! bdc_katalog_preview_allowed() || ( ! isset( $_GET['styl'] ) && ! isset( $_COOKIE[ BDC_STYLE_COOKIE ] ) ) ) {
+		if ( ! bdc_katalog_preview_allowed() || ( ! isset( $_GET['styl'] ) && ! isset( $_COOKIE[ BDC_STYLE_COOKIE ] ) && ! isset( $_GET['menu'] ) && ! isset( $_COOKIE[ BDC_MENU_COOKIE ] ) ) ) {
 			return;
 		}
 		$mode    = bdc_katalog_mode();
@@ -571,7 +571,7 @@ add_action(
 			'katalog'          => 'Katalog',
 			'katalog-kontrast' => 'Katalog: wysoki kontrast',
 		);
-		echo '<style>.bdc-style-switcher{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:1000;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;max-width:calc(100vw - 32px);padding:.5rem .75rem;border:1px solid #1d1e2c;border-radius:2px;background:#fffdf7;color:#1d1e2c;font:400 .8125rem/1.4 "Courier Prime","Courier New",monospace;box-shadow:0 2px 0 0 #1d1e2c}.bdc-style-switcher a{color:#1f4e8c;text-underline-offset:3px}.bdc-style-switcher a:focus-visible{outline:2px solid #1f4e8c;outline-offset:2px}.bdc-style-switcher [aria-current]{color:#1d1e2c;font-weight:700;text-decoration:none}</style>';
+		echo '<style>.bdc-style-switcher{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:1000;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;max-width:calc(100vw - 32px);padding:.5rem .75rem;border:1px solid #1d1e2c;border-radius:2px;background:#fffdf7;color:#1d1e2c;font:400 .8125rem/1.4 "Courier Prime","Courier New",monospace;box-shadow:0 2px 0 0 #1d1e2c}.bdc-style-switcher a{display:inline-flex;align-items:center;min-height:24px;color:#1f4e8c;text-underline-offset:3px}.bdc-style-switcher a:focus-visible{outline:2px solid #1f4e8c;outline-offset:2px}.bdc-style-switcher [aria-current]{color:#1d1e2c;font-weight:700;text-decoration:none}</style>';
 		echo '<nav class="bdc-style-switcher" aria-label="Podgląd wyglądu strony"><span>Podgląd:</span>';
 		foreach ( $options as $key => $label ) {
 			printf(
@@ -581,8 +581,97 @@ add_action(
 				esc_html( $label )
 			);
 		}
+		if ( bdc_demo_menu_post() ) {
+			echo '<span>Menu:</span>';
+			$menu = bdc_demo_menu_id() ? 'rozbudowane' : 'zwykle';
+			foreach ( array( 'zwykle' => 'Zwykłe', 'rozbudowane' => 'Rozbudowane' ) as $key => $label ) {
+				printf(
+					'<a href="%1$s"%2$s>%3$s</a>',
+					esc_url( add_query_arg( 'menu', $key ) ),
+					$key === $menu ? ' aria-current="true"' : '',
+					esc_html( $label )
+				);
+			}
+		}
 		echo '</nav>';
 	}
+);
+
+/**
+ * Staging only: a preview of the example deep menu that setup/demo-menu.php saves
+ * (a wp_navigation post named bdc-przykladowe-menu). ?menu=rozbudowane shows it in
+ * place of the header's main menu for this visitor, ?menu=zwykle goes back; the
+ * choice is kept in a cookie. The site's own menu is never changed, and
+ * production ignores the parameter and the cookie.
+ */
+const BDC_MENU_COOKIE = 'bdc_menu';
+
+function bdc_demo_menu_post() {
+	static $post = false;
+	if ( false === $post ) {
+		$post = bdc_katalog_preview_allowed() ? get_page_by_path( 'bdc-przykladowe-menu', OBJECT, 'wp_navigation' ) : null;
+		if ( $post && 'publish' !== $post->post_status ) {
+			$post = null;
+		}
+	}
+	return $post;
+}
+
+/** The example menu's ID when this visitor previews it, else 0. */
+function bdc_demo_menu_id() {
+	if ( ! bdc_katalog_preview_allowed() ) {
+		return 0;
+	}
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a read-only display preference.
+	$wanted = isset( $_GET['menu'] ) ? sanitize_key( wp_unslash( $_GET['menu'] ) ) : ( isset( $_COOKIE[ BDC_MENU_COOKIE ] ) ? sanitize_key( wp_unslash( $_COOKIE[ BDC_MENU_COOKIE ] ) ) : '' );
+	$post   = 'rozbudowane' === $wanted ? bdc_demo_menu_post() : null;
+	return $post ? $post->ID : 0;
+}
+
+add_action(
+	'template_redirect',
+	function () {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! bdc_katalog_preview_allowed() || ! isset( $_GET['menu'] ) || headers_sent() ) {
+			return;
+		}
+		$wanted = sanitize_key( wp_unslash( $_GET['menu'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$opts   = array(
+			'path'     => COOKIEPATH ? COOKIEPATH : '/',
+			'secure'   => is_ssl(),
+			'httponly' => true,
+			'samesite' => 'Lax',
+		);
+		if ( 'rozbudowane' === $wanted ) {
+			setcookie( BDC_MENU_COOKIE, $wanted, array( 'expires' => time() + 30 * DAY_IN_SECONDS ) + $opts );
+		} elseif ( 'zwykle' === $wanted ) {
+			setcookie( BDC_MENU_COOKIE, '', array( 'expires' => time() - HOUR_IN_SECONDS ) + $opts );
+		}
+		nocache_headers();
+	}
+);
+
+// The header's main menu renders the example menu instead of its own links. A
+// nested block ignores attributes changed in render_block_data, so render a copy
+// that points at the saved menu.
+add_filter(
+	'pre_render_block',
+	function ( $pre, $block ) {
+		if ( null !== $pre || 'core/navigation' !== $block['blockName'] || isset( $block['attrs']['ref'] ) || 'Menu główne' !== ( $block['attrs']['ariaLabel'] ?? '' ) ) {
+			return $pre;
+		}
+		$id = bdc_demo_menu_id();
+		if ( ! $id ) {
+			return $pre;
+		}
+		$block['attrs']['ref'] = $id;
+		$block['innerBlocks']  = array();
+		$block['innerHTML']    = '';
+		$block['innerContent'] = array();
+		return render_block( $block );
+	},
+	10,
+	2
 );
 
 /**

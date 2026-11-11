@@ -15,6 +15,7 @@ wordpress/
 ├── theme/biblioteka-dostepna-cyfrowo/    the block theme: theme.json, templates, parts, patterns
 ├── setup/setup.php                       idempotent site setup (settings, pages, editable blocks, example content)
 ├── setup/clean-content.php               idempotent cleanup of imported content
+├── setup/demo-menu.php                   example deep menu for demo and staging sites
 ├── mu-plugins/smtp.php                   sends mail through SMTP_* env (no-op when unset)
 ├── Dockerfile, docker/                   the production image
 ├── tools/                                screenshots, block validation, accessibility check
@@ -53,6 +54,21 @@ example addresses (`example.org` emails, `+48 00 …` phones), opening hours,
 numbers, pages (O nas, Kontakt, Katalog online, Deklaracja dostępności) and,
 on a site without posts, three example news posts. The data is at the top of
 the script; everything it creates is ordinary content, edited in the admin.
+
+#### Example deep menu (demo and staging only)
+
+```bash
+docker compose run --rm cli wp eval-file /setup/demo-menu.php        # add
+docker compose run --rm cli wp eval-file /setup/demo-menu.php usun   # remove
+```
+
+`demo-menu.php` adds example sub-pages (under Nasza biblioteka, Dla czytelników
+and Wydarzenia) and a saved three-level menu, *Przykładowe menu (podgląd)*. The
+site's own menu stays as it is: outside production, open any page with
+`?menu=rozbudowane` to see the example menu in its place (the wide menu, or the
+side index with `?styl=katalog`) and `?menu=zwykle` to go back. The choice is
+kept in a cookie, and the preview bar in the corner switches it. Don't run it
+for a real library.
 
 ### Copy of an existing site
 
