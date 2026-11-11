@@ -414,28 +414,15 @@ body.bdc-katalog {
 	font-weight: 700;
 }
 
-/* Home hero: welcome text beside a decorative photo (a reading room with a
-   self-service kiosk). It is a CSS background, so screen readers skip it; the
-   text stays in the editable "powitanie" pattern. On phones the photo follows
-   the text. */
-.bdc-katalog .bdc-hero {
-	display: grid;
-	gap: var(--wp--preset--spacing--50);
-}
+/* Home hero photo (layout in style.css): Katalog swaps in a reading room with a
+   self-service kiosk, framed by a printed rule instead of rounded corners. */
 .bdc-katalog .bdc-hero::after {
-	content: "";
-	aspect-ratio: 16 / 9;
 	border: 1px solid var(--wp--preset--color--rule);
+	border-radius: 0;
 	background: url("../images/hero-czytelnia-800.webp") center 30% / cover no-repeat;
 }
 @media (min-width: 782px) {
-	.bdc-katalog .bdc-hero {
-		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-		align-items: center;
-		gap: var(--wp--preset--spacing--60);
-	}
 	.bdc-katalog .bdc-hero::after {
-		aspect-ratio: 3 / 2;
 		background-position: center;
 		background-image: url("../images/hero-czytelnia-1200.jpg");
 		background-image: image-set(

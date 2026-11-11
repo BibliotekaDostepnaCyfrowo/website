@@ -473,6 +473,35 @@ html {
 .bdc-hero h1 {
 	margin-top: 0.5rem;
 }
+/* Beside the welcome text: a decorative photo (a bright library with readers).
+   It is a CSS background, so screen readers skip it; the text stays in the
+   editable "powitanie" pattern. On phones the photo follows the text. */
+.bdc-hero {
+	display: grid;
+	gap: var(--wp--preset--spacing--50);
+}
+.bdc-hero::after {
+	content: "";
+	aspect-ratio: 16 / 9;
+	border-radius: 6px;
+	background: url("assets/images/hero-biblioteka-800.webp") center 40% / cover no-repeat;
+}
+@media (min-width: 782px) {
+	.bdc-hero {
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+		align-items: center;
+		gap: var(--wp--preset--spacing--60);
+	}
+	.bdc-hero::after {
+		aspect-ratio: 3 / 2;
+		background-position: center;
+		background-image: url("assets/images/hero-biblioteka-1200.jpg");
+		background-image: image-set(
+			url("assets/images/hero-biblioteka-1200.webp") type("image/webp"),
+			url("assets/images/hero-biblioteka-1200.jpg") type("image/jpeg")
+		);
+	}
+}
 .bdc-hero .wp-block-button.is-style-outline > .wp-block-button__link {
 	border: 2px solid var(--wp--preset--color--blue);
 	background: transparent;
