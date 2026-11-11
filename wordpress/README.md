@@ -18,7 +18,7 @@ wordpress/
 ├── setup/demo-menu.php                   example deep menu for demo and staging sites
 ├── mu-plugins/smtp.php                   sends mail through SMTP_* env (no-op when unset)
 ├── Dockerfile, docker/                   the production image
-├── tools/                                screenshots, block validation, accessibility check
+├── tools/                                screenshots, block validation, accessibility check, theme release zip
 └── import/                               WordPress export files (gitignored, contains site content)
 ```
 
@@ -196,6 +196,8 @@ with Facebook posts) with real emoji characters and strips stray forms from post
 - **Theme version**: bump `Version` in `style.css` when adding a pattern file.
   WordPress caches the list of theme patterns per version, so a new pattern
   renders empty until the version changes. The version also busts the CSS/JS cache.
+  It is also what sites outside our image compare with the latest
+  [release](#theme-releases).
 - **Page width**: pages and articles line up with the 1280px grid like the news
   list. Running text is capped at 768px for readability; columns, groups and
   galleries use the full width.
@@ -215,6 +217,87 @@ docker compose run --rm browser a11y.mjs home=http://localhost:8088/ news=http:/
 # Desktop and mobile screenshots, saved to .context/shots/<folder>/
 docker compose run --rm browser screenshot.mjs /shots/<folder> home=http://localhost:8088/
 ```
+
+## Theme releases
+
+Libraries' production sites run at their own hosting providers, restored from a
+handoff bundle that carries the theme as it was in our image. After that, the
+theme updates the way any theme does: through WordPress's own updater, from this
+repository's GitHub releases.
+
+- `style.css` has `Update URI: https://github.com/BibliotekaDostepnaCyfrowo/website`.
+  On every update check (twice a day, and on Kokpit → Aktualizacje),
+  `inc/updates.php` reads `theme-update.json` from the latest release. A newer
+  version there appears in wp-admin as an ordinary theme update; with
+  auto-updates turned on for the theme (Wygląd → Motywy → *Włącz automatyczne
+  aktualizacje*, or `wp theme auto-updates enable biblioteka-dostepna-cyfrowo`) the
+  site installs it by itself.
+- The zip has to match the `sha256` in `theme-update.json`, or the update stops
+  before anything is replaced. WordPress.org is never asked about this theme.
+- Where the admin can't change code (`DISALLOW_FILE_MODS`, as in our image) the
+  updater isn't hooked: there the image brings the theme.
+- Only the theme travels this way. `mu-plugins/smtp.php` and the core translations
+  in a bundle don't: translations update with WordPress itself
+  (`wp language core update`, automatic by default), and a change to `smtp.php`
+  has to be sent to the providers by hand.
+
+`theme-update.json` is public and is the one place that says which version is
+current, for sites and for monitoring:
+
+```json
+{
+  "theme": "biblioteka-dostepna-cyfrowo",
+  "version": "2.2.0",
+  "package": "https://github.com/BibliotekaDostepnaCyfrowo/website/releases/download/theme-v2.2.0/biblioteka-dostepna-cyfrowo-2.2.0.zip",
+  "sha256": "…",
+  "url": "https://github.com/BibliotekaDostepnaCyfrowo/website/releases/tag/theme-v2.2.0",
+  "requires": "6.6",
+  "requires_php": "8.1",
+  "released": "2026-11-11T12:00:00Z"
+}
+```
+
+It is always at
+https://github.com/BibliotekaDostepnaCyfrowo/website/releases/latest/download/theme-update.json,
+so every release of this repository must be a theme release.
+
+### Releasing
+
+1. Merge the change to `main` with `Version` in `style.css` bumped
+   (`2.2.0` → `2.2.1` for fixes, `2.3.0` for new features). It goes to staging first
+   as usual; release what has been checked there.
+2. Tag that commit and push the tag:
+
+   ```bash
+   git switch main && git pull
+   git tag theme-v2.2.1 && git push origin theme-v2.2.1
+   ```
+
+3. The *Theme release* workflow checks that the tag is on `main`, that it equals
+   `Version`, and the PHP syntax, then publishes the release with the zip and
+   `theme-update.json`. Sites see it within 12 hours, or at once on Kokpit →
+   Aktualizacje → *Sprawdź ponownie*.
+
+Every site with auto-updates on installs what the tag publishes, so tag only what
+you would upload to every library yourself. To withdraw a bad release, delete it
+(and its tag) on GitHub: the previous release becomes the latest again. Sites that
+already installed it get the fix from the next, higher version.
+
+### Testing a release on a local site
+
+`wordpress/tools/theme-release.sh <version> <dir>` builds the same zip and
+manifest locally; `BASE_URL=http://<host>` makes the manifest point at your own
+copy of the zip. On a plain WordPress (not this image, which disables updates)
+with the theme at a lower version, add to `wp-config.php`
+
+```php
+define( 'BDC_THEME_UPDATE_MANIFEST', 'http://<host>/theme-update.json' );
+```
+
+and `wp theme list` shows the update. WordPress refuses to download from a private
+address, so a host on a Docker network also needs
+`add_filter( 'http_request_host_is_external', '__return_true' );` in a mu-plugin
+of that test site.
 
 ## Production image
 
