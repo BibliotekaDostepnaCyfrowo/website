@@ -2,7 +2,7 @@
 Theme Name: Biblioteka Dostępna Cyfrowo
 Theme URI: https://github.com/BibliotekaDostepnaCyfrowo/website
 Description: Motyw strony biblioteki publicznej, dostępnej cyfrowo. Theme for an accessible public library website.
-Version: 2.1.4
+Version: 2.1.5
 Requires at least: 6.6
 Requires PHP: 8.1
 Author: Feature Forest sp. z o.o.
@@ -44,6 +44,13 @@ html {
 }
 .bdc-header .wp-block-site-logo img {
 	height: auto;
+}
+/* Next to a long menu bar the logo keeps its size and the menu gives way.
+   Narrower screens have the hamburger menu, and the logo may shrink there. */
+@media (width >= 1240px) {
+	.bdc-header .wp-block-site-logo {
+		flex-shrink: 0;
+	}
 }
 
 /* Top navigation: blue fill rising from the middle on hover, as in the previous design.
@@ -144,15 +151,14 @@ html {
 }
 
 /* A menu with panels needs more room than four plain links: it stays a bar from
-   1240px up and is the hamburger menu below that (core switches at 600px), and the
-   search stays a magnifier until there is room for the field beside it. */
-@media (max-width: 1499px) {
-	.bdc-header:has(.wp-block-navigation .has-child) .bdc-search--inline {
-		display: none;
-	}
-	.bdc-header:has(.wp-block-navigation .has-child) .bdc-search--compact {
-		display: block;
-	}
+   1240px up and is the hamburger menu below that (core switches at 600px). The
+   header is no wider than the content on any screen, so the search stays a
+   magnifier beside it. */
+.bdc-header:has(.wp-block-navigation .has-child) .bdc-search--inline {
+	display: none;
+}
+.bdc-header:has(.wp-block-navigation .has-child) .bdc-search--compact {
+	display: block;
 }
 @media (min-width: 600px) and (width < 1240px) {
 	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open) {
