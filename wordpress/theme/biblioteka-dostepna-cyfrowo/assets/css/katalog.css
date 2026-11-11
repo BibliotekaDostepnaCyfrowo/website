@@ -1,0 +1,368 @@
+/*
+ * BDC Katalog: the print-inspired look (styles/katalog.json).
+ * Loaded after style.css only while Katalog is on (see bdc_katalog_mode() in functions.php).
+ * Only what the style variation can't express lives here: the catalog card, typed labels,
+ * the bookcloth footer, the logo swap, and the Reading room (dark) and High contrast palettes.
+ * Every colour comes from the palette, so the three modes only swap the variables below.
+ */
+
+/* Palette per mode. Daylight values come from styles/katalog.json; repeated here so the
+   preview (which merges the variation per request) and the chosen variation look the same. */
+body.bdc-katalog {
+	--wp--preset--color--black: #1d1e2c;
+	--wp--preset--color--blue: #1f4e8c;
+	--wp--preset--color--red: #9a2a2a;
+	--wp--preset--color--white: #fffdf7;
+	--wp--preset--color--gray-light: #f4f1e8;
+	--wp--preset--color--gray: #24392d;
+	--wp--preset--color--ink-muted: #4f5160;
+	--wp--preset--color--on-stamp: #ffffff;
+	--wp--preset--color--rule: #6f6c62;
+	--wp--preset--color--rule-faint: #c9d3e3;
+	--wp--preset--color--on-bookcloth: #f1ede2;
+	--bdc-head-rule: 3px;
+}
+@media (prefers-color-scheme: dark) {
+	body.bdc-katalog:not(.bdc-katalog--kontrast) {
+		--wp--preset--color--black: #ece8dd;
+		--wp--preset--color--blue: #8fb3e6;
+		--wp--preset--color--red: #ef8f85;
+		--wp--preset--color--white: #22252c;
+		--wp--preset--color--gray-light: #17191e;
+		--wp--preset--color--gray: #101813;
+		--wp--preset--color--ink-muted: #b4b0a6;
+		--wp--preset--color--on-stamp: #17191e;
+		--wp--preset--color--rule: #8a8679;
+		--wp--preset--color--rule-faint: #353c4a;
+		--wp--preset--color--on-bookcloth: #f1ede2;
+		color-scheme: dark;
+	}
+}
+body.bdc-katalog--kontrast {
+	--wp--preset--color--black: #000000;
+	--wp--preset--color--blue: #0b3a75;
+	--wp--preset--color--red: #7a0f0f;
+	--wp--preset--color--white: #ffffff;
+	--wp--preset--color--gray-light: #ffffff;
+	--wp--preset--color--gray: #000000;
+	--wp--preset--color--ink-muted: #333333;
+	--wp--preset--color--on-stamp: #ffffff;
+	--wp--preset--color--rule: #000000;
+	--wp--preset--color--rule-faint: #767676;
+	--wp--preset--color--on-bookcloth: #ffffff;
+}
+
+body.bdc-katalog {
+	background: var(--wp--preset--color--gray-light);
+	color: var(--wp--preset--color--black);
+}
+.bdc-katalog :where(a, button, summary, input, select, textarea):focus-visible {
+	outline: 2px solid var(--wp--preset--color--blue);
+	outline-offset: 2px;
+}
+.bdc-katalog a {
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+.bdc-katalog a:hover {
+	text-decoration-thickness: 2px;
+}
+
+/* Typed facts: dates, hours, labels, counts. */
+.bdc-katalog :is(.bdc-kicker, .bdc-results-count, .wp-block-post-date, .bdc-hours, .bdc-hours-today, .bdc-today, .bdc-stats strong, .bdc-breadcrumbs) {
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-variant-numeric: tabular-nums;
+}
+.bdc-katalog .bdc-kicker {
+	color: var(--wp--preset--color--ink-muted);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+}
+
+/* Header: a printed masthead, separated by a rule instead of a shadow. */
+.bdc-katalog .bdc-header {
+	box-shadow: none;
+	border-bottom: 1px solid var(--wp--preset--color--rule);
+}
+@media (min-width: 600px) {
+	.bdc-katalog .bdc-header .wp-block-navigation-item__content {
+		background-image: none;
+		border-block: 3px solid transparent;
+		transition: border-color 0.15s;
+	}
+	.bdc-katalog .bdc-header .wp-block-navigation-item__content:hover,
+	.bdc-katalog .bdc-header .wp-block-navigation-item__content:focus-visible {
+		color: inherit;
+		border-bottom-color: var(--wp--preset--color--rule);
+		text-decoration: none;
+	}
+	.bdc-katalog .bdc-header .current-menu-item > .wp-block-navigation-item__content,
+	.bdc-katalog .bdc-header [aria-current='page'] {
+		color: var(--wp--preset--color--blue);
+		border-bottom-color: var(--wp--preset--color--blue);
+		text-decoration: none;
+	}
+}
+
+/* Search: a secondary control, square-ish like a stamp. */
+.bdc-katalog .bdc-search .wp-block-search__inside-wrapper,
+.bdc-katalog .bdc-search .wp-block-search__input,
+.bdc-katalog .bdc-search .wp-block-search__button {
+	border-radius: 2px;
+}
+.bdc-katalog .bdc-search .wp-block-search__inside-wrapper {
+	min-height: 44px;
+	border: 1px solid var(--wp--preset--color--rule);
+	background: var(--wp--preset--color--white);
+}
+.bdc-katalog .bdc-search .wp-block-search__button {
+	min-width: 44px;
+	min-height: 44px;
+	color: var(--wp--preset--color--black);
+}
+.bdc-katalog .bdc-search .wp-block-search__input::placeholder {
+	color: var(--wp--preset--color--ink-muted);
+}
+.bdc-katalog .bdc-search--compact.wp-block-search__searchfield-hidden .wp-block-search__inside-wrapper {
+	background: var(--wp--preset--color--white);
+}
+.bdc-katalog .bdc-search--compact:not(.wp-block-search__searchfield-hidden) .wp-block-search__inside-wrapper {
+	box-shadow: 0 0 0 30px var(--wp--preset--color--white);
+}
+
+/* Today bar: a typed notice line. */
+.bdc-katalog .bdc-today {
+	padding-inline: max(16px, var(--wp--style--root--padding-left, 20px));
+	border-bottom: 1px solid var(--wp--preset--color--rule);
+	font-size: 0.9375rem;
+	text-align: center;
+}
+@media (max-width: 599px) {
+	.bdc-katalog .bdc-today {
+		font-size: 0.875rem;
+	}
+}
+.bdc-katalog .bdc-today__list a,
+.bdc-katalog .bdc-today__value {
+	border-color: var(--wp--preset--color--rule);
+	border-radius: 2px;
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--black);
+	font-weight: 400;
+}
+.bdc-katalog .bdc-today__list a:hover {
+	border-color: var(--wp--preset--color--blue);
+}
+.bdc-katalog :is(.bdc-today, .bdc-hours-today) :is(.is-open, .is-closed),
+.bdc-katalog .bdc-today__value {
+	font-weight: 700;
+}
+
+/* Buttons: primary is the stamp-blue fill (theme.json); outline is the secondary control. */
+.bdc-katalog .wp-block-button__link {
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	text-underline-offset: 3px;
+}
+.bdc-katalog .bdc-hero .wp-block-button.is-style-outline > .wp-block-button__link,
+.bdc-katalog .wp-block-button.is-style-outline > .wp-block-button__link {
+	border: 1px solid var(--wp--preset--color--rule);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--black);
+}
+.bdc-katalog .bdc-hero .wp-block-button.is-style-outline > .wp-block-button__link:hover,
+.bdc-katalog .wp-block-button.is-style-outline > .wp-block-button__link:hover {
+	border-color: var(--wp--preset--color--blue);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--blue);
+}
+.bdc-katalog .bdc-hours-toggle > summary {
+	min-width: 0;
+	min-height: 44px;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--wp--preset--color--rule);
+	border-radius: 2px;
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--black);
+	line-height: 1.2;
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.bdc-katalog .bdc-hours-toggle > summary::before {
+	width: 18px;
+	height: 18px;
+}
+.bdc-katalog .bdc-hours-toggle > summary:hover {
+	border-color: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--blue);
+}
+.bdc-katalog .bdc-hours-toggle[open] > summary {
+	border-color: var(--wp--preset--color--blue);
+	background: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--on-stamp);
+}
+.bdc-katalog .bdc-hours tr.is-today {
+	font-weight: 700;
+}
+
+/* The catalog card: news, branches, numbers. One anatomy everywhere. */
+.bdc-katalog :is(.bdc-card, .bdc-branch, .bdc-stats) {
+	border: 1px solid var(--wp--preset--color--rule);
+	border-top: var(--bdc-head-rule) solid var(--wp--preset--color--red);
+	border-radius: 0;
+	background: var(--wp--preset--color--white);
+	box-shadow: 0 2px 0 0 var(--wp--preset--color--rule);
+}
+.bdc-katalog .bdc-card .wp-block-post-featured-image {
+	border-bottom: 1px solid var(--wp--preset--color--rule);
+	background: var(--wp--preset--color--gray-light);
+}
+.bdc-katalog .bdc-card .wp-block-post-featured-image img {
+	opacity: 1;
+}
+.bdc-katalog .bdc-card__body {
+	padding: 1.5rem;
+}
+.bdc-katalog .bdc-branch {
+	text-align: start;
+}
+.bdc-katalog .bdc-branch .bdc-hours table {
+	margin-inline: 0;
+}
+.bdc-katalog .bdc-hours td:first-child {
+	text-align: start;
+}
+.bdc-katalog .bdc-stats.bdc-stats {
+	padding: 1.5rem;
+}
+.bdc-katalog .bdc-stats p {
+	font-weight: 400;
+	font-size: 0.9375rem;
+}
+.bdc-katalog .bdc-stats strong {
+	color: var(--wp--preset--color--black);
+	font-size: clamp(2rem, 1.6rem + 1.6vw, 2.5rem);
+	font-weight: 700;
+}
+.bdc-katalog .bdc-stats strong em {
+	color: var(--wp--preset--color--ink-muted);
+}
+
+/* "Czytaj dalej": italic Caslon, the arrow moves on hover. */
+.bdc-katalog :is(.bdc-more a:not(.wp-block-button__link), .wp-block-post-excerpt__more-link) {
+	font-style: italic;
+}
+
+/* News list view and grid switch */
+.bdc-katalog .bdc-view-switch {
+	border: 1px solid var(--wp--preset--color--rule);
+	border-radius: 2px;
+	background: var(--wp--preset--color--white);
+}
+.bdc-katalog .bdc-view-switch button {
+	min-width: 44px;
+	min-height: 44px;
+	border-radius: 2px;
+	color: var(--wp--preset--color--ink-muted);
+}
+.bdc-katalog .bdc-view-switch button[aria-pressed='true'] {
+	background: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--on-stamp);
+	box-shadow: none;
+}
+.bdc-katalog[data-bdc-news-view='list'] .bdc-news .bdc-card,
+[data-bdc-news-view='list'] .bdc-katalog .bdc-news .bdc-card {
+	border: 0;
+	box-shadow: none;
+	background: transparent;
+}
+.bdc-katalog [data-bdc-news-view='list'] .bdc-news .wp-block-post-template > li + li {
+	border-top-color: var(--wp--preset--color--rule);
+}
+
+/* Map */
+.bdc-katalog .bdc-map__canvas {
+	border: 1px solid var(--wp--preset--color--rule);
+	box-shadow: none;
+}
+
+/* Pagination: typed numbers in outlined boxes; the current page is the stamp-blue fill. */
+.bdc-katalog .wp-block-query-pagination .page-numbers,
+.bdc-katalog .wp-block-query-pagination a {
+	min-width: 44px;
+	min-height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--wp--preset--color--rule);
+	border-radius: 2px;
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--black);
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-weight: 400;
+}
+.bdc-katalog .wp-block-query-pagination a:hover {
+	border-color: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--blue);
+}
+.bdc-katalog .wp-block-query-pagination .page-numbers.current {
+	border-color: var(--wp--preset--color--blue);
+	background: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--on-stamp);
+	font-weight: 700;
+}
+.bdc-katalog .wp-block-query-pagination .page-numbers.dots {
+	border: 0;
+	background: none;
+}
+
+/* Footer: a cloth-bound back cover. A hairline marks its edge where bookcloth and paper are close (dark). */
+.bdc-katalog .bdc-footer {
+	border-top: 1px solid var(--wp--preset--color--rule);
+	color: var(--wp--preset--color--on-bookcloth);
+}
+.bdc-katalog .bdc-footer :is(p, li, address, .wp-block-site-title) {
+	color: var(--wp--preset--color--on-bookcloth);
+}
+.bdc-katalog .bdc-footer a {
+	color: var(--wp--preset--color--on-bookcloth);
+	text-decoration: underline;
+	font-weight: 400;
+}
+.bdc-katalog .bdc-footer nav a {
+	font-weight: 700;
+}
+.bdc-katalog .bdc-footer :focus-visible {
+	outline-color: var(--wp--preset--color--on-bookcloth);
+}
+
+/* Logo: the Caslon wordmark, dark or light ink per surface (bdc_katalog_logo() swaps the image). */
+.bdc-katalog .bdc-katalog-logo {
+	display: block;
+	width: auto;
+	height: 44px;
+	max-width: 100%;
+}
+.bdc-katalog .bdc-katalog-logo--light {
+	display: none;
+}
+.bdc-katalog .bdc-footer .bdc-katalog-logo--dark {
+	display: none;
+}
+.bdc-katalog .bdc-footer .bdc-katalog-logo--light {
+	display: block;
+}
+@media (prefers-color-scheme: dark) {
+	body.bdc-katalog:not(.bdc-katalog--kontrast) .bdc-katalog-logo--dark {
+		display: none;
+	}
+	body.bdc-katalog:not(.bdc-katalog--kontrast) .bdc-katalog-logo--light {
+		display: block;
+	}
+}
+
