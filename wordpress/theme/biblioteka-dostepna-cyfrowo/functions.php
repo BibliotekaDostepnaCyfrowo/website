@@ -44,10 +44,12 @@ add_action(
 );
 
 /**
- * Favicon: the "O" from the logo, kept in assets/icons so it ships with the
- * theme instead of living in the database. The SVG turns light in dark mode;
- * the .ico is for older browsers and plain /favicon.ico requests. A Site Icon
- * set in the admin takes over from these.
+ * Favicon: the Biblioteka Dostępna Cyfrowo programme icon, as on
+ * https://dostepnacyfrowo.pl/. The .ico (16–64px) and 180px touch icon are that
+ * site's files; favicon.svg is the vector logo on a white tile, so it stays
+ * legible on dark tab bars. Kept in assets/icons so it ships with the theme
+ * instead of living in the database; the .ico also answers plain /favicon.ico
+ * requests. A Site Icon set in the admin takes over from these.
  */
 function bdc_favicon_links() {
 	if ( has_site_icon() ) {
