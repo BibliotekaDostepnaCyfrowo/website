@@ -2,7 +2,7 @@
 Theme Name: Biblioteka Dostępna Cyfrowo
 Theme URI: https://github.com/BibliotekaDostepnaCyfrowo/website
 Description: Motyw strony biblioteki publicznej, dostępnej cyfrowo. Theme for an accessible public library website.
-Version: 2.1.2
+Version: 2.1.3
 Requires at least: 6.6
 Requires PHP: 8.1
 Author: Feature Forest sp. z o.o.
@@ -46,13 +46,23 @@ html {
 	height: auto;
 }
 
-/* Top navigation: blue fill rising from the middle on hover, as in the previous design. */
+/* Top navigation: blue fill rising from the middle on hover, as in the previous design.
+   Only the first level; what a panel holds is styled under "Wide menu" below. */
 @media (min-width: 600px) {
+	/* Every wrapper core puts around the list is as tall as the header, so the fill is too. */
+	.bdc-header .wp-block-navigation,
+	.bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-container-content,
+	.bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container {
+		align-items: stretch;
+	}
+	.bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) :is(.wp-block-navigation__responsive-close, .wp-block-navigation__responsive-dialog, .wp-block-navigation__responsive-container-content) {
+		height: 100%;
+	}
 	.bdc-header .wp-block-navigation__container {
 		align-self: stretch;
 		gap: 0;
 	}
-	.bdc-header .wp-block-navigation-item__content {
+	.bdc-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
 		display: flex;
 		align-items: center;
 		height: 100%;
@@ -63,13 +73,212 @@ html {
 		background-size: 100% 0%;
 		transition: background-size 0.3s ease-out, color 0.3s ease-out;
 	}
-	.bdc-header .wp-block-navigation-item__content:hover,
-	.bdc-header .wp-block-navigation-item__content:focus-visible,
-	.bdc-header .current-menu-item > .wp-block-navigation-item__content {
+	.bdc-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
+	.bdc-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible,
+	.bdc-header .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content[aria-expanded='true'],
+	.bdc-header .wp-block-navigation__container > .current-menu-item > .wp-block-navigation-item__content {
 		color: var(--wp--preset--color--white);
 		background-size: 100% 100%;
 		text-decoration: underline;
 	}
+}
+
+/* Wide menu. A first-level item with a submenu opens a panel as wide as the header.
+   Links directly in it flow in a row; a submenu nested in it is a group, one column
+   with a heading (functions.php rebuilds its markup). A group with the class
+   bdc-menu-chips shows its links as a row of buttons, for years and other short labels. */
+.bdc-header .bdc-menu-group {
+	display: block;
+}
+.bdc-header .bdc-menu-group__title {
+	display: block;
+	margin-bottom: 0.25rem;
+	padding: 0 0 0.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--black);
+	color: var(--wp--preset--color--black);
+	font-size: var(--wp--preset--font-size--medium);
+	font-weight: 900;
+	text-decoration: none;
+}
+.bdc-header a.bdc-menu-group__title:hover {
+	text-decoration: underline;
+}
+.bdc-header .bdc-menu-group__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.bdc-header .wp-block-navigation .wp-block-navigation__submenu-container .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title) {
+	display: block;
+	padding: 0.625rem 0;
+	color: var(--wp--preset--color--blue);
+	font-size: var(--wp--preset--font-size--medium);
+	text-decoration: underline;
+}
+.bdc-header .bdc-menu-chips .bdc-menu-group__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding-top: 0.5rem;
+}
+/* As heavy as the panel-link rule above, which would otherwise win. */
+.bdc-header .wp-block-navigation .wp-block-navigation__submenu-container .bdc-menu-chips .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 4.25rem;
+	min-height: 2.75rem;
+	box-sizing: border-box;
+	padding: 0 0.75rem;
+	border: 1px solid var(--wp--preset--color--blue);
+	border-radius: 5px;
+	background: var(--wp--preset--color--white);
+	text-decoration: none;
+}
+.bdc-header .wp-block-navigation .wp-block-navigation__submenu-container .bdc-menu-chips .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title):hover {
+	background: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--white);
+}
+.bdc-header .wp-block-navigation__submenu-icon > svg {
+	transition: transform 0.15s;
+}
+
+/* A menu with panels needs more room than four plain links: it stays a bar from
+   1240px up and is the hamburger menu below that (core switches at 600px), and the
+   search stays a magnifier until there is room for the field beside it. */
+@media (max-width: 1499px) {
+	.bdc-header:has(.wp-block-navigation .has-child) .bdc-search--inline {
+		display: none;
+	}
+	.bdc-header:has(.wp-block-navigation .has-child) .bdc-search--compact {
+		display: block;
+	}
+}
+@media (min-width: 600px) and (width < 1240px) {
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open) {
+		display: none;
+	}
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container-open {
+		display: flex;
+		align-self: center;
+	}
+}
+@media (width >= 1240px) {
+	/* The panel is placed against the header, so nothing between them may be positioned. */
+	.bdc-header .wp-block-navigation:has(.has-child),
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open),
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-dialog,
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .wp-block-navigation-item {
+		position: static;
+	}
+	/* Six or so items fit on one line when each takes a little less room. */
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__container {
+		flex-wrap: nowrap;
+		white-space: nowrap;
+	}
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
+		padding: 0 16px;
+	}
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__container > .has-child > .wp-block-navigation-item__content {
+		padding-right: 2.25rem;
+	}
+	.bdc-header .wp-block-navigation__submenu-container {
+		white-space: normal;
+	}
+	/* span: with submenus opening on hover the icon is the button itself and stays as core has it. */
+	.bdc-header .wp-block-navigation__container > .has-child > span.wp-block-navigation__submenu-icon {
+		margin-left: -1.75rem;
+		margin-right: 1rem;
+		/* Above the item's blue fill, which would otherwise cover it. */
+		position: relative;
+		z-index: 2;
+		pointer-events: none;
+		transition: color 0.3s ease-out;
+	}
+	.bdc-header .wp-block-navigation__container > .has-child > .wp-block-navigation-item__content:is(:hover, :focus-visible, [aria-expanded='true']) + .wp-block-navigation__submenu-icon {
+		color: var(--wp--preset--color--white);
+	}
+	.bdc-header .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-container {
+		top: 100%;
+		right: 0;
+		left: 0;
+		flex-flow: row wrap;
+		align-items: flex-start;
+		gap: var(--wp--preset--spacing--30) var(--wp--preset--spacing--50);
+		box-sizing: border-box;
+		min-width: 0;
+		padding: 2rem max(var(--wp--style--root--padding-left, 20px), calc((100% - var(--wp--style--global--wide-size)) / 2)) 2.5rem;
+		border: 0;
+		border-top: 1px solid var(--wp--preset--color--gray);
+		background: var(--wp--preset--color--white);
+		color: var(--wp--preset--color--black);
+		box-shadow: 0 20px 20px #0000001a;
+	}
+	.bdc-header .wp-block-navigation__container > .has-child > .wp-block-navigation-submenu__toggle[aria-expanded='true'] ~ .wp-block-navigation__submenu-container {
+		width: auto;
+	}
+	.bdc-header .wp-block-navigation__submenu-container > .bdc-menu-group {
+		flex: 1 1 14rem;
+		max-width: 24rem;
+	}
+}
+
+/* Hamburger menu: a first-level item with a panel is a section that opens on its
+   button (assets/js/menu-accordion.js keeps aria-expanded; core alone would list
+   every level open, which is also what shows without the script). A menu without
+   submenus keeps core's hamburger menu as it is. */
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__responsive-container-content,
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container {
+	align-items: stretch;
+	gap: 0;
+	width: 100%;
+}
+.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .bdc-menu-group {
+	display: block;
+	width: 100%;
+}
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item {
+	display: block;
+	width: 100%;
+	position: relative;
+	border-bottom: 1px solid var(--wp--preset--color--gray);
+}
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 3.5rem;
+	height: auto;
+	padding: 0;
+	background-image: none;
+	color: var(--wp--preset--color--black);
+	text-align: left;
+}
+.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container > .has-child > span.wp-block-navigation__submenu-icon {
+	display: flex;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 1rem;
+	height: 3.5rem;
+	margin: 0;
+	padding: 0;
+	pointer-events: none;
+}
+.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container > .has-child > .wp-block-navigation-submenu__toggle[aria-expanded='false'] ~ .wp-block-navigation__submenu-container {
+	display: none;
+}
+.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-container {
+	align-items: stretch;
+	gap: var(--wp--preset--spacing--30);
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0.5rem 0 1.5rem;
+}
+.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__submenu-container .wp-block-navigation-item {
+	padding: 0;
 }
 
 /* Header search. Wide screens have room for a slim field next to Facebook;

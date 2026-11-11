@@ -153,6 +153,24 @@ with Facebook posts) with real emoji characters and strips stray forms from post
 - **Catalogs**: every branch has its own catalog on szukamksiążki.pl. Each branch
   section in *Filie* has a "Katalog online" link to it, and the /katalog-online/
   page (in the main menu) lists all of them. Both are content, edited in the admin.
+- **Wide menu**: a main-menu item with a submenu opens a panel across the header
+  (on click). Links placed directly in it sit in a row; a submenu nested in it
+  becomes a column with a heading, its links always shown (`functions.php`
+  rebuilds the nested submenu's markup, `style.css` lays it out). Give a nested
+  submenu the CSS class `bdc-menu-chips` to show its links as a row of buttons,
+  for years and other short labels. A menu with panels turns into the hamburger
+  menu below 1240px (a plain one at 600px), where each item with a panel is a
+  section that opens on tap (`assets/js/menu-accordion.js`; the section of the
+  current page starts open).
+  Keep year archives out of the menu: link the newest few and "all years".
+- **Side index (BDC Katalog)**: in the Katalog style a menu with submenus has no
+  panels. From 1240px up the header keeps only the logo and the search, and the
+  same menu stands to the left of every page as a numbered "Spis treści" whose
+  sections open in place; the section of the current page starts open.
+  `functions.php` builds it from the header menu as rendered and wraps it with
+  the template's `<main>`, so staff still edit one menu; `katalog.css` lays it
+  out. Below 1240px it is hidden and the hamburger menu shows the same index.
+  A menu without submenus stays a plain bar.
 - **Search** in the header: a slim field on wide screens, a magnifier that opens
   the field over the bar on narrower ones (core's search block, no plugin).
 - **News list view**: /aktualnosci/ and search results have a grid / list switch
