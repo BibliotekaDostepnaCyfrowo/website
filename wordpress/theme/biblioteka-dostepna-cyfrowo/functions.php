@@ -584,3 +584,44 @@ add_action(
 		echo '</nav>';
 	}
 );
+
+/**
+ * Main menu, third level. A first-level item opens a wide panel (style.css); a
+ * submenu nested inside it is a group of that panel: a heading with its links
+ * always shown, not a second toggle to open. Core renders every submenu as a
+ * closed toggle, so the heads of the nested ones are rebuilt here. Each submenu
+ * converts the submenus inside it; the innermost render first.
+ */
+add_filter(
+	'render_block_core/navigation-submenu',
+	function ( $content ) {
+		wp_enqueue_script(
+			'biblioteka-dostepna-cyfrowo-menu-accordion',
+			get_theme_file_uri( 'assets/js/menu-accordion.js' ),
+			array(),
+			wp_get_theme()->get( 'Version' ),
+			array( 'strategy' => 'defer' )
+		);
+		$head  = '~<li\b[^>]*\bclass="([^"]*\bhas-child\b[^"]*)"[^>]*>((?:(?!<ul\b|<li\b).)*)<ul\b[^>]*\bwp-block-navigation__submenu-container\b[^>]*>~s';
+		$first = true;
+		return preg_replace_callback(
+			$head,
+			function ( $match ) use ( &$first ) {
+				if ( $first ) {
+					$first = false;
+					return $match[0];
+				}
+				$classes = array_diff( preg_split( '/\s+/', trim( $match[1] ) ), array( 'has-child', 'open-on-click', 'open-on-hover-click', 'wp-block-navigation-submenu' ) );
+				// With submenus opening on hover the head is a link plus an arrow button: keep the link.
+				if ( preg_match( '~<a\b[^>]*>.*?</a>~s', $match[2], $link ) ) {
+					$title = str_replace( 'wp-block-navigation-item__content', 'wp-block-navigation-item__content bdc-menu-group__title', $link[0] );
+				} else {
+					preg_match( '~<span class="wp-block-navigation-item__label">(.*?)</span>~s', $match[2], $label );
+					$title = '<span class="bdc-menu-group__title">' . ( $label[1] ?? '' ) . '</span>';
+				}
+				return '<li class="' . esc_attr( implode( ' ', $classes ) ) . ' bdc-menu-group">' . $title . '<ul class="bdc-menu-group__list">';
+			},
+			$content
+		) ?? $content;
+	}
+);
