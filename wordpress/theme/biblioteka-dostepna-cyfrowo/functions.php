@@ -412,3 +412,173 @@ add_shortcode(
 		);
 	}
 );
+
+/*
+ * BDC Katalog: the print-inspired look (styles/katalog.json + assets/css/katalog.css).
+ *
+ * It is on when an admin picks the "BDC Katalog" style in the Site Editor, or, outside
+ * production only, as a preview for one visitor: ?styl=katalog (Daylight, and Reading room
+ * when the device is set to dark mode), ?styl=katalog-kontrast (High contrast), and
+ * ?styl=domyslny to go back. The choice is kept in a cookie while clicking around.
+ * Production never reads the parameter or the cookie, so a cached public page can never
+ * carry someone's preview.
+ */
+
+const BDC_STYLE_COOKIE = 'bdc_styl';
+
+function bdc_katalog_preview_allowed() {
+	return 'production' !== wp_get_environment_type();
+}
+
+/** '' (default look), 'katalog' or 'katalog-kontrast'. */
+function bdc_katalog_mode() {
+	static $mode = null;
+	if ( null !== $mode ) {
+		return $mode;
+	}
+	$mode    = '';
+	$allowed = array( 'katalog', 'katalog-kontrast' );
+	if ( bdc_katalog_preview_allowed() ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a read-only display preference.
+		$wanted = isset( $_GET['styl'] ) ? sanitize_key( wp_unslash( $_GET['styl'] ) ) : null;
+		if ( null === $wanted && isset( $_COOKIE[ BDC_STYLE_COOKIE ] ) ) {
+			$wanted = sanitize_key( wp_unslash( $_COOKIE[ BDC_STYLE_COOKIE ] ) );
+		}
+		if ( in_array( $wanted, $allowed, true ) ) {
+			$mode = $wanted;
+			return $mode;
+		}
+		if ( 'domyslny' === $wanted ) {
+			return $mode;
+		}
+	}
+	if ( 'katalog' === wp_get_global_settings( array( 'custom', 'bdcStyle' ) ) ) {
+		$mode = 'katalog';
+	}
+	return $mode;
+}
+
+/** Whether this request previews Katalog without it being the chosen site style. */
+function bdc_katalog_is_preview() {
+	return '' !== bdc_katalog_mode() && 'katalog' !== wp_get_global_settings( array( 'custom', 'bdcStyle' ) );
+}
+
+// Remember (or forget) a preview chosen with ?styl=.
+add_action(
+	'template_redirect',
+	function () {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! bdc_katalog_preview_allowed() || ! isset( $_GET['styl'] ) || headers_sent() ) {
+			return;
+		}
+		$wanted = sanitize_key( wp_unslash( $_GET['styl'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$opts   = array(
+			'path'     => COOKIEPATH ? COOKIEPATH : '/',
+			'secure'   => is_ssl(),
+			'httponly' => true,
+			'samesite' => 'Lax',
+		);
+		if ( in_array( $wanted, array( 'katalog', 'katalog-kontrast' ), true ) ) {
+			setcookie( BDC_STYLE_COOKIE, $wanted, array( 'expires' => time() + 30 * DAY_IN_SECONDS ) + $opts );
+		} elseif ( 'domyslny' === $wanted ) {
+			setcookie( BDC_STYLE_COOKIE, '', array( 'expires' => time() - HOUR_IN_SECONDS ) + $opts );
+		}
+		nocache_headers();
+	}
+);
+
+// A preview merges the variation over the theme's own theme.json for this request only.
+add_filter(
+	'wp_theme_json_data_theme',
+	function ( $theme_json ) {
+		if ( is_admin() || ! bdc_katalog_preview_allowed() ) {
+			return $theme_json;
+		}
+		// Read the preference directly: global settings aren't available while theme.json is being built.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$wanted = isset( $_GET['styl'] ) ? sanitize_key( wp_unslash( $_GET['styl'] ) ) : ( isset( $_COOKIE[ BDC_STYLE_COOKIE ] ) ? sanitize_key( wp_unslash( $_COOKIE[ BDC_STYLE_COOKIE ] ) ) : '' );
+		if ( ! in_array( $wanted, array( 'katalog', 'katalog-kontrast' ), true ) ) {
+			return $theme_json;
+		}
+		$file = get_theme_file_path( 'styles/katalog.json' );
+		if ( ! is_readable( $file ) ) {
+			return $theme_json;
+		}
+		$variation = wp_json_file_decode( $file, array( 'associative' => true ) );
+		unset( $variation['title'], $variation['$schema'] );
+		return $theme_json->update_with( $variation );
+	}
+);
+
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		if ( '' === bdc_katalog_mode() ) {
+			return;
+		}
+		$version = wp_get_theme()->get( 'Version' );
+		wp_enqueue_style( 'bdc-katalog', get_theme_file_uri( 'assets/css/katalog.css' ), array( 'biblioteka-dostepna-cyfrowo' ), $version );
+	},
+	20
+);
+
+add_filter(
+	'body_class',
+	function ( $classes ) {
+		$mode = bdc_katalog_mode();
+		if ( '' !== $mode ) {
+			$classes[] = 'bdc-katalog';
+			if ( 'katalog-kontrast' === $mode ) {
+				$classes[] = 'bdc-katalog--kontrast';
+			}
+		}
+		return $classes;
+	}
+);
+
+// Katalog uses its Caslon wordmark: dark ink on paper, light ink on the footer and in dark mode.
+add_filter(
+	'render_block_core/site-logo',
+	function ( $content ) {
+		if ( '' === bdc_katalog_mode() || ! preg_match( '/<img\b[^>]*>/', $content, $img ) ) {
+			return $content;
+		}
+		$alt  = preg_match( '/\balt="([^"]*)"/', $img[0], $m ) ? $m[1] : esc_attr( get_bloginfo( 'name' ) );
+		$logo = sprintf(
+			'<img class="bdc-katalog-logo bdc-katalog-logo--dark" src="%1$s" alt="%3$s" width="226" height="44"><img class="bdc-katalog-logo bdc-katalog-logo--light" src="%2$s" alt="%3$s" width="226" height="44">',
+			esc_url( get_theme_file_uri( 'assets/images/katalog-logo.svg' ) ),
+			esc_url( get_theme_file_uri( 'assets/images/katalog-logo-light.svg' ) ),
+			$alt
+		);
+		return str_replace( $img[0], $logo, $content );
+	}
+);
+
+// Staging only: a small bar to switch between the looks while previewing.
+add_action(
+	'wp_footer',
+	function () {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! bdc_katalog_preview_allowed() || ( ! isset( $_GET['styl'] ) && ! isset( $_COOKIE[ BDC_STYLE_COOKIE ] ) ) ) {
+			return;
+		}
+		$mode    = bdc_katalog_mode();
+		$current = '' === $mode ? 'domyslny' : $mode;
+		$options = array(
+			'domyslny'         => 'Domyślny',
+			'katalog'          => 'Katalog',
+			'katalog-kontrast' => 'Katalog: wysoki kontrast',
+		);
+		echo '<style>.bdc-style-switcher{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:1000;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .75rem;max-width:calc(100vw - 32px);padding:.5rem .75rem;border:1px solid #1d1e2c;border-radius:2px;background:#fffdf7;color:#1d1e2c;font:400 .8125rem/1.4 "Courier Prime","Courier New",monospace;box-shadow:0 2px 0 0 #1d1e2c}.bdc-style-switcher a{color:#1f4e8c;text-underline-offset:3px}.bdc-style-switcher a:focus-visible{outline:2px solid #1f4e8c;outline-offset:2px}.bdc-style-switcher [aria-current]{color:#1d1e2c;font-weight:700;text-decoration:none}</style>';
+		echo '<nav class="bdc-style-switcher" aria-label="Podgląd wyglądu strony"><span>Podgląd:</span>';
+		foreach ( $options as $key => $label ) {
+			printf(
+				'<a href="%1$s"%2$s>%3$s</a>',
+				esc_url( add_query_arg( 'styl', $key ) ),
+				$key === $current ? ' aria-current="true"' : '',
+				esc_html( $label )
+			);
+		}
+		echo '</nav>';
+	}
+);

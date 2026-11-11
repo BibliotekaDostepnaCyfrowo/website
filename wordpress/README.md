@@ -129,6 +129,21 @@ with Facebook posts) with real emoji characters and strips stray forms from post
   must not keep pages across midnight, or the bar shows yesterday's hours.
 - **Fonts** are self-hosted (no requests to Google) and preloaded, so text doesn't
   reflow when they arrive.
+- **BDC Katalog** is a second, print-inspired look: Libre Caslon for reading,
+  Courier Prime for typed facts (dates, hours, labels), catalog cards with an oxblood
+  head rule, a bookcloth-green footer and a Caslon wordmark instead of the logo image.
+  It is a style variation (`styles/katalog.json`) plus `assets/css/katalog.css` for
+  what theme.json can't express, including a dark palette (Reading room, follows
+  the device's dark mode) and a High contrast palette. Turn it on for a whole site
+  in Wygląd → Edytor → Style → BDC Katalog. Outside production it can also be
+  previewed per visitor without changing the site: add `?styl=katalog`,
+  `?styl=katalog-kontrast` or `?styl=domyslny` to any URL; the choice is kept in a
+  cookie and a small bar in the corner switches between them. Production ignores
+  the parameter and the cookie, so cached public pages never carry a preview.
+  The Katalog palette reuses the base slugs (`black`, `blue`, `red`, `white`,
+  `gray-light`, `gray`) and the `montserrat` font slug now holds Libre Caslon Text,
+  so every template and pattern works unchanged. Its design system is the
+  "BDC Katalog" design-system artifact.
 - **Branches map** (home page and /kontakt/): the *Filie* pattern holds a list of
   branches with their coordinates, which `assets/js/branches-map.js` turns into one
   map with a pin per branch. Each pin links to its branch section by id
