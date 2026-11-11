@@ -86,23 +86,278 @@ body.bdc-katalog {
 	border-bottom: 1px solid var(--wp--preset--color--rule);
 }
 @media (min-width: 600px) {
-	.bdc-katalog .bdc-header .wp-block-navigation-item__content {
+	/* The bar's items only (the selectors match style.css's first-level ones in weight). */
+	.bdc-katalog .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
+		box-sizing: border-box;
 		background-image: none;
 		border-block: 3px solid transparent;
 		transition: border-color 0.15s;
 	}
-	.bdc-katalog .bdc-header .wp-block-navigation-item__content:hover,
-	.bdc-katalog .bdc-header .wp-block-navigation-item__content:focus-visible {
+	.bdc-katalog .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:hover,
+	.bdc-katalog .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content:focus-visible,
+	.bdc-katalog .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content[aria-expanded='true'],
+	.bdc-katalog .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .has-child > .wp-block-navigation-item__content:is(:hover, :focus-visible, [aria-expanded='true']) + .wp-block-navigation__submenu-icon {
 		color: inherit;
 		border-bottom-color: var(--wp--preset--color--rule);
 		text-decoration: none;
 	}
-	.bdc-katalog .bdc-header .current-menu-item > .wp-block-navigation-item__content,
-	.bdc-katalog .bdc-header [aria-current='page'] {
+	.bdc-katalog .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .current-menu-item > .wp-block-navigation-item__content,
+	.bdc-katalog .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .wp-block-navigation-item > [aria-current='page'] {
 		color: var(--wp--preset--color--blue);
 		border-bottom-color: var(--wp--preset--color--blue);
 		text-decoration: none;
 	}
+}
+
+/* Side index ("Spis treści"). A menu with submenus has no bar and no panels in Katalog:
+   from 1240px up the header keeps only the logo and the search, and the menu stands
+   beside the page as a numbered index on a catalog card (functions.php builds it from
+   the header menu and wraps it with <main>). Below that it is hidden and the hamburger
+   menu takes over. Closed sections are hidden only where scripts run. */
+.bdc-katalog .bdc-index {
+	display: none;
+}
+@media (width >= 1240px) {
+	/* Not a hamburger menu left open while the window grew: it must stay closable. */
+	body.bdc-katalog.bdc-has-index .bdc-header .wp-block-navigation__responsive-container:not(.is-menu-open),
+	body.bdc-katalog.bdc-has-index .bdc-header .wp-block-navigation__responsive-container-open {
+		display: none;
+	}
+	body.bdc-katalog.bdc-has-index .bdc-header .bdc-search--inline {
+		display: block;
+	}
+	body.bdc-katalog.bdc-has-index .bdc-header .bdc-search--compact {
+		display: none;
+	}
+	.bdc-katalog .bdc-index-layout {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--wp--preset--spacing--30);
+		box-sizing: border-box;
+		max-width: calc(var(--wp--style--global--wide-size) + 2 * var(--wp--style--root--padding-left, 20px));
+		margin-inline: auto;
+		padding-left: var(--wp--style--root--padding-left, 20px);
+	}
+	.bdc-katalog .bdc-index-layout > main {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+	.bdc-katalog .bdc-index {
+		display: block;
+		flex: 0 0 19rem;
+		box-sizing: border-box;
+		/* Stays in view on a long page; a long open section scrolls inside it. */
+		position: sticky;
+		top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--wp--preset--spacing--30));
+		max-height: calc(100vh - var(--wp-admin--admin-bar--height, 0px) - 2 * var(--wp--preset--spacing--30));
+		overflow-y: auto;
+		margin-block: var(--wp--preset--spacing--40) var(--wp--preset--spacing--60);
+		border: 1px solid var(--wp--preset--color--rule);
+		border-top: var(--bdc-head-rule) solid var(--wp--preset--color--red);
+		background: var(--wp--preset--color--white);
+		box-shadow: 0 2px 0 0 var(--wp--preset--color--rule);
+	}
+}
+.bdc-katalog .bdc-index__label {
+	margin: 0;
+	padding: 1rem 1.5rem 0.75rem;
+	color: var(--wp--preset--color--ink-muted);
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+.bdc-katalog .bdc-index :is(ol, ul) {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.bdc-katalog .bdc-index__sections > li {
+	border-top: 1px solid var(--wp--preset--color--rule-faint);
+}
+.bdc-katalog .bdc-index__head {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 3.25rem;
+	padding: 0.5rem 1.5rem;
+	border: 0;
+	background: none;
+	color: var(--wp--preset--color--black);
+	font: inherit;
+	font-size: 1.125rem;
+	font-weight: 700;
+	line-height: 1.4;
+	text-align: left;
+	text-decoration: none;
+	cursor: pointer;
+}
+.bdc-katalog .bdc-index__head:hover .bdc-index__name {
+	text-decoration: underline;
+	text-decoration-thickness: 2px;
+	text-underline-offset: 3px;
+}
+.bdc-katalog .bdc-index__head[aria-current='page'] {
+	color: var(--wp--preset--color--blue);
+}
+.bdc-katalog .bdc-index__no {
+	color: var(--wp--preset--color--ink-muted);
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-size: 0.9375rem;
+	font-weight: 400;
+}
+.bdc-katalog .bdc-index__name {
+	flex-grow: 1;
+}
+/* The sign repeats aria-expanded, so it has no spoken text where that can be set. */
+.bdc-katalog button.bdc-index__head::after {
+	content: "−";
+	content: "−" / "";
+	font-family: var(--wp--preset--font-family--typewriter);
+}
+.bdc-katalog .bdc-index .bdc-index__list {
+	padding: 0 1.5rem 1rem 3.125rem;
+}
+.bdc-katalog .bdc-index__list :is(a, .bdc-index__group) {
+	display: inline-block;
+	padding: 0.375rem 0 0.1875rem;
+	border-bottom: 3px solid transparent;
+	color: var(--wp--preset--color--black);
+	line-height: 1.4;
+	text-decoration: none;
+}
+.bdc-katalog .bdc-index__list .bdc-index__group {
+	font-weight: 700;
+}
+.bdc-katalog .bdc-index__list a:hover {
+	text-decoration: underline;
+}
+.bdc-katalog .bdc-index__list a[aria-current='page'] {
+	border-bottom-color: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--blue);
+	font-weight: 700;
+}
+.bdc-katalog .bdc-index .bdc-index__sublist {
+	margin-bottom: 0.375rem;
+	padding-left: 1.25rem;
+	border-left: 1px solid var(--wp--preset--color--rule-faint);
+	font-size: 1rem;
+}
+@media (scripting: enabled) {
+	.bdc-katalog button.bdc-index__head[aria-expanded='false']::after {
+		content: "+";
+		content: "+" / "";
+	}
+	.bdc-katalog .bdc-index__head[aria-expanded='false'] + .bdc-index__list {
+		display: none;
+	}
+}
+
+/* Hamburger menu: paper and ink from the palette, whatever the menu (core's sheet is
+   white with black text in every mode). */
+.bdc-katalog .bdc-header .wp-block-navigation .wp-block-navigation__responsive-container.is-menu-open {
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--black);
+}
+/* Of a menu with submenus: the same index. Numbered sections, a typed + / − for the
+   chevron, plain ink links, nested groups behind a hairline. */
+.bdc-katalog .bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container {
+	counter-reset: bdc-index;
+}
+.bdc-katalog .bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item {
+	counter-increment: bdc-index;
+	border-bottom-color: var(--wp--preset--color--rule-faint);
+}
+.bdc-katalog .bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
+	border: 0;
+	font-size: 1.1875rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+.bdc-katalog .bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content::before {
+	content: counter(bdc-index);
+	flex: none;
+	width: 1.75rem;
+	color: var(--wp--preset--color--ink-muted);
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-size: 0.9375rem;
+	font-weight: 400;
+}
+.bdc-katalog .bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item > [aria-current='page'] {
+	color: var(--wp--preset--color--blue);
+}
+.bdc-katalog .bdc-header .is-menu-open .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-icon > svg {
+	display: none;
+}
+.bdc-katalog .bdc-header .is-menu-open .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-icon::after {
+	content: "+";
+	content: "+" / "";
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-size: 1.25rem;
+	font-weight: 700;
+}
+.bdc-katalog .bdc-header .is-menu-open .wp-block-navigation__container > .has-child > .wp-block-navigation-submenu__toggle[aria-expanded='true'] + .wp-block-navigation__submenu-icon::after {
+	content: "−";
+	content: "−" / "";
+}
+.bdc-katalog .bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-container {
+	gap: 0;
+	padding: 0 0 1rem 1.75rem;
+}
+.bdc-katalog .bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__submenu-container .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title) {
+	display: inline-block;
+	padding: 0.625rem 0 0.4375rem;
+	border-bottom: 3px solid transparent;
+	color: var(--wp--preset--color--black);
+	font-size: 1.0625rem;
+	font-weight: 400;
+	line-height: 1.4;
+	text-decoration: none;
+}
+.bdc-katalog .bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__submenu-container .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title):hover {
+	text-decoration: underline;
+}
+.bdc-katalog .bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__submenu-container .wp-block-navigation-item__content.wp-block-navigation-item__content[aria-current='page'] {
+	border-bottom-color: var(--wp--preset--color--blue);
+	color: var(--wp--preset--color--blue);
+	font-weight: 700;
+}
+.bdc-katalog .bdc-header .is-menu-open .bdc-menu-group__title {
+	margin: 0;
+	padding: 0.625rem 0 0.25rem;
+	border: 0;
+	font-size: 1.0625rem;
+	font-weight: 700;
+	line-height: 1.4;
+}
+.bdc-katalog .bdc-header .is-menu-open .bdc-menu-group__list {
+	margin-bottom: 0.375rem;
+	padding-left: 1rem;
+	border-left: 1px solid var(--wp--preset--color--rule-faint);
+}
+/* Years stay a row of buttons: outlined and typed, like Katalog's other small controls. */
+.bdc-katalog .bdc-header .is-menu-open .bdc-menu-chips .bdc-menu-group__list {
+	padding: 0.5rem 0 0.5rem 1rem;
+}
+.bdc-katalog .bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__submenu-container .bdc-menu-chips .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title) {
+	display: flex;
+	min-width: 2.75rem;
+	padding: 0 0.75rem;
+	border: 1px solid var(--wp--preset--color--rule);
+	border-radius: 2px;
+	background: var(--wp--preset--color--white);
+	font-family: var(--wp--preset--font-family--typewriter);
+	font-size: 0.9375rem;
+	font-weight: 700;
+}
+.bdc-katalog .bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__submenu-container .bdc-menu-chips .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title):hover {
+	border-color: var(--wp--preset--color--blue);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--blue);
 }
 
 /* Search: a secondary control, square-ish like a stamp. */

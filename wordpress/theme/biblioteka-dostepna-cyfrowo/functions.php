@@ -595,14 +595,8 @@ add_action(
 add_filter(
 	'render_block_core/navigation-submenu',
 	function ( $content ) {
-		wp_enqueue_script(
-			'biblioteka-dostepna-cyfrowo-menu-accordion',
-			get_theme_file_uri( 'assets/js/menu-accordion.js' ),
-			array(),
-			wp_get_theme()->get( 'Version' ),
-			array( 'strategy' => 'defer' )
-		);
-		$head  = '~<li\b[^>]*\bclass="([^"]*\bhas-child\b[^"]*)"[^>]*>((?:(?!<ul\b|<li\b).)*)<ul\b[^>]*\bwp-block-navigation__submenu-container\b[^>]*>~s';
+		bdc_enqueue_menu_script();
+		$head  ='~<li\b[^>]*\bclass="([^"]*\bhas-child\b[^"]*)"[^>]*>((?:(?!<ul\b|<li\b).)*)<ul\b[^>]*\bwp-block-navigation__submenu-container\b[^>]*>~s';
 		$first = true;
 		return preg_replace_callback(
 			$head,
@@ -623,5 +617,204 @@ add_filter(
 			},
 			$content
 		) ?? $content;
+	}
+);
+
+/** The script that opens and closes the sections of the hamburger menu and of the side index. */
+function bdc_enqueue_menu_script() {
+	wp_enqueue_script(
+		'biblioteka-dostepna-cyfrowo-menu-accordion',
+		get_theme_file_uri( 'assets/js/menu-accordion.js' ),
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		array( 'strategy' => 'defer' )
+	);
+}
+
+/**
+ * Whether a menu link points at the address being viewed. Core marks links to
+ * pages and posts itself, but not custom links, which the theme's menus use.
+ */
+function bdc_is_current_url( $url ) {
+	$link = wp_parse_url( $url );
+	if ( ! $link || is_search() || ( ! isset( $link['path'] ) && ! isset( $link['host'] ) ) ) {
+		return false; // An empty or "#…" link, or search results (their address is the home page's).
+	}
+	if ( isset( $link['host'] ) && wp_parse_url( home_url(), PHP_URL_HOST ) !== $link['host'] ) {
+		return false;
+	}
+	$here = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
+	if ( untrailingslashit( $link['path'] ?? '' ) !== untrailingslashit( $here['path'] ?? '' ) ) {
+		return false;
+	}
+	if ( isset( $link['query'] ) ) {
+		return ( $here['query'] ?? '' ) === $link['query'];
+	}
+	// Without pretty permalinks every page shares the home page's path.
+	return get_option( 'permalink_structure' ) || is_front_page();
+}
+
+add_filter(
+	'render_block_core/navigation-link',
+	function ( $content, $block ) {
+		if ( str_contains( $content, 'aria-current' ) || ! bdc_is_current_url( $block['attrs']['url'] ?? '' ) ) {
+			return $content;
+		}
+		return preg_replace( '/<a\b/', '<a aria-current="page"', $content, 1 );
+	},
+	10,
+	2
+);
+
+/*
+ * BDC Katalog, a menu with submenus: a "Spis treści" side index.
+ *
+ * Katalog has no wide panels. On wide screens the header shows no menu bar; the
+ * same menu stands beside the page content as a numbered index whose sections
+ * open in place (assets/css/katalog.css lays it out, assets/js/menu-accordion.js
+ * opens the sections). It is built from the header menu as rendered, so staff
+ * edit one menu. Narrower screens keep the hamburger menu and never see the index.
+ */
+
+/** The index markup for this request ('' when there is none); pass a string to set it. */
+function bdc_index_html( $set = null ) {
+	static $html = '';
+	if ( null !== $set ) {
+		$html = $set;
+	}
+	return $html;
+}
+
+/** Whether the index was placed beside <main> on this request. */
+function bdc_index_placed( $set = null ) {
+	static $placed = false;
+	if ( null !== $set ) {
+		$placed = $set;
+	}
+	return $placed;
+}
+
+/** Menu items of one rendered list: label, url, current, children. */
+function bdc_index_items( DOMElement $list ) {
+	$items = array();
+	foreach ( $list->childNodes as $li ) {
+		if ( ! $li instanceof DOMElement || 'li' !== $li->tagName ) {
+			continue;
+		}
+		$item = array(
+			'label'    => '',
+			'url'      => '',
+			'current'  => false,
+			'children' => array(),
+		);
+		foreach ( $li->childNodes as $node ) {
+			if ( ! $node instanceof DOMElement ) {
+				continue;
+			}
+			if ( 'ul' === $node->tagName ) {
+				$item['children'] = bdc_index_items( $node );
+			} elseif ( '' === $item['label'] ) {
+				$item['label'] = trim( $node->textContent );
+				if ( 'a' === $node->tagName && $node->getAttribute( 'href' ) ) {
+					$item['url']     = $node->getAttribute( 'href' );
+					$item['current'] = 'page' === $node->getAttribute( 'aria-current' );
+				}
+			}
+		}
+		if ( '' !== $item['label'] ) {
+			$items[] = $item;
+		}
+	}
+	return $items;
+}
+
+function bdc_index_has_current( $items ) {
+	foreach ( $items as $item ) {
+		if ( $item['current'] || bdc_index_has_current( $item['children'] ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/** The links of an open section; an item with children is a heading over its own list. */
+function bdc_index_list( $items, $attrs ) {
+	$out = '<ul ' . $attrs . '>';
+	foreach ( $items as $item ) {
+		$out .= '<li>';
+		if ( '' !== $item['url'] ) {
+			$out .= sprintf( '<a href="%s"%s>%s</a>', esc_url( $item['url'] ), $item['current'] ? ' aria-current="page"' : '', esc_html( $item['label'] ) );
+		} else {
+			$out .= '<span class="bdc-index__group">' . esc_html( $item['label'] ) . '</span>';
+		}
+		if ( $item['children'] ) {
+			$out .= bdc_index_list( $item['children'], 'class="bdc-index__sublist"' );
+		}
+		$out .= '</li>';
+	}
+	return $out . '</ul>';
+}
+
+// The header menu renders first: keep it as the index when it has submenus.
+add_filter(
+	'render_block_core/navigation',
+	function ( $content ) {
+		if ( '' === bdc_katalog_mode() || '' !== bdc_index_html() || ! str_contains( $content, 'has-child' ) || ! class_exists( 'DOMDocument' ) ) {
+			return $content;
+		}
+		$dom  = new DOMDocument();
+		$prev = libxml_use_internal_errors( true );
+		$dom->loadHTML( '<?xml encoding="utf-8"?>' . $content );
+		libxml_clear_errors();
+		libxml_use_internal_errors( $prev );
+		$list = ( new DOMXPath( $dom ) )->query( '//ul[contains(concat(" ", normalize-space(@class), " "), " wp-block-navigation__container ")]' )->item( 0 );
+		if ( ! $list instanceof DOMElement ) {
+			return $content;
+		}
+		$sections = '';
+		foreach ( bdc_index_items( $list ) as $i => $item ) {
+			$no   = $i + 1;
+			$head = '<span class="bdc-index__no" aria-hidden="true">' . $no . '</span><span class="bdc-index__name">' . esc_html( $item['label'] ) . '</span>';
+			if ( $item['children'] ) {
+				// Closed sections are hidden only where scripts run (katalog.css): without them everything is listed.
+				$sections .= sprintf(
+					'<li><button type="button" class="bdc-index__head" aria-expanded="%s" aria-controls="bdc-index-%d">%s</button>%s</li>',
+					bdc_index_has_current( $item['children'] ) ? 'true' : 'false',
+					$no,
+					$head,
+					bdc_index_list( $item['children'], 'id="bdc-index-' . $no . '" class="bdc-index__list"' )
+				);
+			} elseif ( '' !== $item['url'] ) {
+				$sections .= sprintf( '<li><a class="bdc-index__head" href="%s"%s>%s</a></li>', esc_url( $item['url'] ), $item['current'] ? ' aria-current="page"' : '', $head );
+			}
+		}
+		bdc_enqueue_menu_script();
+		bdc_index_html( '<nav class="bdc-index" aria-label="Spis treści"><p class="bdc-index__label">Spis treści</p><ol class="bdc-index__sections">' . $sections . '</ol></nav>' );
+		return $content;
+	}
+);
+
+// The index stands beside the template's <main> (not one inside the page's own content).
+add_filter(
+	'render_block_core/group',
+	function ( $content, $block ) {
+		if ( 'main' !== ( $block['attrs']['tagName'] ?? '' ) || '' === bdc_index_html() || bdc_index_placed() || doing_filter( 'the_content' ) ) {
+			return $content;
+		}
+		bdc_index_placed( true );
+		return '<div class="bdc-index-layout">' . bdc_index_html() . $content . '</div>';
+	},
+	10,
+	2
+);
+
+// The template is rendered before <body> is printed, so the class knows about the index.
+add_filter(
+	'body_class',
+	function ( $classes ) {
+		if ( bdc_index_placed() ) {
+			$classes[] = 'bdc-has-index';
+		}
+		return $classes;
 	}
 );

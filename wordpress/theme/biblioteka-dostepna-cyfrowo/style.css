@@ -2,7 +2,7 @@
 Theme Name: Biblioteka Dostępna Cyfrowo
 Theme URI: https://github.com/BibliotekaDostepnaCyfrowo/website
 Description: Motyw strony biblioteki publicznej, dostępnej cyfrowo. Theme for an accessible public library website.
-Version: 2.1.2
+Version: 2.1.3
 Requires at least: 6.6
 Requires PHP: 8.1
 Author: Feature Forest sp. z o.o.
@@ -121,7 +121,8 @@ html {
 	gap: 0.5rem;
 	padding-top: 0.5rem;
 }
-.bdc-header .bdc-menu-chips .bdc-menu-group__list .wp-block-navigation-item__content {
+/* As heavy as the panel-link rule above, which would otherwise win. */
+.bdc-header .wp-block-navigation .wp-block-navigation__submenu-container .bdc-menu-chips .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title) {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -134,7 +135,7 @@ html {
 	background: var(--wp--preset--color--white);
 	text-decoration: none;
 }
-.bdc-header .bdc-menu-chips .bdc-menu-group__list .wp-block-navigation-item__content:hover {
+.bdc-header .wp-block-navigation .wp-block-navigation__submenu-container .bdc-menu-chips .wp-block-navigation-item__content.wp-block-navigation-item__content:not(.bdc-menu-group__title):hover {
 	background: var(--wp--preset--color--blue);
 	color: var(--wp--preset--color--white);
 }
@@ -153,20 +154,21 @@ html {
 		display: block;
 	}
 }
-@media (min-width: 600px) and (max-width: 1239px) {
+@media (min-width: 600px) and (width < 1240px) {
 	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open) {
 		display: none;
 	}
 	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container-open {
 		display: flex;
+		align-self: center;
 	}
 }
-@media (min-width: 1240px) {
+@media (width >= 1240px) {
 	/* The panel is placed against the header, so nothing between them may be positioned. */
-	.bdc-header .wp-block-navigation,
-	.bdc-header .wp-block-navigation .wp-block-navigation__responsive-container:not(.is-menu-open),
-	.bdc-header .wp-block-navigation__responsive-dialog,
-	.bdc-header .wp-block-navigation__container > .wp-block-navigation-item {
+	.bdc-header .wp-block-navigation:has(.has-child),
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open),
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__responsive-dialog,
+	.bdc-header .wp-block-navigation:has(.has-child) .wp-block-navigation__responsive-container:not(.is-menu-open) .wp-block-navigation__container > .wp-block-navigation-item {
 		position: static;
 	}
 	/* Six or so items fit on one line when each takes a little less room. */
@@ -183,7 +185,8 @@ html {
 	.bdc-header .wp-block-navigation__submenu-container {
 		white-space: normal;
 	}
-	.bdc-header .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-icon {
+	/* span: with submenus opening on hover the icon is the button itself and stays as core has it. */
+	.bdc-header .wp-block-navigation__container > .has-child > span.wp-block-navigation__submenu-icon {
 		margin-left: -1.75rem;
 		margin-right: 1rem;
 		/* Above the item's blue fill, which would otherwise cover it. */
@@ -222,9 +225,10 @@ html {
 
 /* Hamburger menu: a first-level item with a panel is a section that opens on its
    button (assets/js/menu-accordion.js keeps aria-expanded; core alone would list
-   every level open, which is also what shows without the script). */
-.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content,
-.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container {
+   every level open, which is also what shows without the script). A menu without
+   submenus keeps core's hamburger menu as it is. */
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__responsive-container-content,
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container {
 	align-items: stretch;
 	gap: 0;
 	width: 100%;
@@ -233,13 +237,13 @@ html {
 	display: block;
 	width: 100%;
 }
-.bdc-header .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item {
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item {
 	display: block;
 	width: 100%;
 	position: relative;
 	border-bottom: 1px solid var(--wp--preset--color--gray);
 }
-.bdc-header .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
+.bdc-header .wp-block-navigation:has(.has-child) .is-menu-open .wp-block-navigation__container > .wp-block-navigation-item > .wp-block-navigation-item__content {
 	display: flex;
 	align-items: center;
 	box-sizing: border-box;
@@ -251,7 +255,7 @@ html {
 	color: var(--wp--preset--color--black);
 	text-align: left;
 }
-.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container > .has-child > .wp-block-navigation__submenu-icon {
+.bdc-header .wp-block-navigation .is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation__container > .has-child > span.wp-block-navigation__submenu-icon {
 	display: flex;
 	align-items: center;
 	position: absolute;

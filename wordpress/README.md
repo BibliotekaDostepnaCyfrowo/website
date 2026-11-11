@@ -163,6 +163,14 @@ with Facebook posts) with real emoji characters and strips stray forms from post
   section that opens on tap (`assets/js/menu-accordion.js`; the section of the
   current page starts open).
   Keep year archives out of the menu: link the newest few and "all years".
+- **Side index (BDC Katalog)**: in the Katalog style a menu with submenus has no
+  panels. From 1240px up the header keeps only the logo and the search, and the
+  same menu stands to the left of every page as a numbered "Spis treści" whose
+  sections open in place; the section of the current page starts open.
+  `functions.php` builds it from the header menu as rendered and wraps it with
+  the template's `<main>`, so staff still edit one menu; `katalog.css` lays it
+  out. Below 1240px it is hidden and the hamburger menu shows the same index.
+  A menu without submenus stays a plain bar.
 - **Search** in the header: a slim field on wide screens, a magnifier that opens
   the field over the bar on narrower ones (core's search block, no plugin).
 - **News list view**: /aktualnosci/ and search results have a grid / list switch

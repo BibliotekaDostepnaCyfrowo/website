@@ -65,4 +65,12 @@
 			attributeFilter: [ 'class', 'aria-expanded' ],
 		} );
 	} );
+
+	// BDC Katalog's side index ("Spis treści"): a section's button opens and closes
+	// its list. The server marks the section of the current page as open.
+	document.querySelectorAll( '.bdc-index__head[aria-expanded]' ).forEach( ( head ) => {
+		head.addEventListener( 'click', () => {
+			head.setAttribute( 'aria-expanded', String( head.getAttribute( 'aria-expanded' ) !== 'true' ) );
+		} );
+	} );
 } )();
