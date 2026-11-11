@@ -2,13 +2,14 @@
 Theme Name: Biblioteka Dostępna Cyfrowo
 Theme URI: https://github.com/BibliotekaDostepnaCyfrowo/website
 Description: Motyw strony biblioteki publicznej, dostępnej cyfrowo. Theme for an accessible public library website.
-Version: 2.1.5
+Version: 2.2.0
 Requires at least: 6.6
 Requires PHP: 8.1
 Author: Feature Forest sp. z o.o.
 Author URI: https://featureforest.eu
 License: GPL-2.0-or-later
 Text Domain: biblioteka-dostepna-cyfrowo
+Update URI: https://github.com/BibliotekaDostepnaCyfrowo/website
 */
 
 /* Only what theme.json can't express lives here. */

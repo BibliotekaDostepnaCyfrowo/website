@@ -1,0 +1,44 @@
+name: Theme release
+
+# A tag theme-v<version> on main publishes that version of the theme as a GitHub
+# release: biblioteka-dostepna-cyfrowo-<version>.zip and theme-update.json. Sites
+# outside our image read theme-update.json from the latest release and offer the
+# update in wp-admin (theme/biblioteka-dostepna-cyfrowo/inc/updates.php).
+# Steps: wordpress/README.md, "Theme releases".
+on:
+  push:
+    tags:
+      - "theme-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      # Every site that turned on auto-updates installs what this publishes.
+      - name: The tag is on main
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main \
+            || { echo "::error::$GITHUB_REF_NAME is not on main; release from main only"; exit 1; }
+
+      - name: PHP syntax
+        run: find wordpress/theme -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Build
+        run: wordpress/tools/theme-release.sh "${GITHUB_REF_NAME#theme-v}" dist
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --verify-tag --latest \
+            --title "Motyw ${GITHUB_REF_NAME#theme-v}" \
+            --notes "Motyw Biblioteka Dostępna Cyfrowo ${GITHUB_REF_NAME#theme-v}. Strony z tym motywem pokażą tę wersję jako aktualizację w Kokpit → Aktualizacje. Ręczna instalacja: Wygląd → Motywy → Dodaj motyw → Wyślij motyw na serwer, plik zip poniżej."

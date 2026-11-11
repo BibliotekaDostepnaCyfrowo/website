@@ -10,6 +10,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+// Updates from this repository's GitHub releases (sites hosted outside our image).
+require_once __DIR__ . '/inc/updates.php';
+
 add_action(
 	'after_setup_theme',
 	function () {
