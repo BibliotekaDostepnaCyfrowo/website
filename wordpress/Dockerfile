@@ -4,21 +4,21 @@
 # image (or a restart) always runs exactly what was built here. See README.md.
 #
 # Keep the base in step with compose.yml.
-ARG WORDPRESS_IMAGE=wordpress:7.1.4-php8.3-apache@sha256:12ec50e21cb81a5ea964669d434578b7da4a101a45aef83f5f1c2227bcd1b058
+ARG WORDPRESS_IMAGE=wordpress:7.1.5-php8.3-apache@sha256:2e5145737f46b8fd53f333a05eb3a4f21321c90e20475b7827082dd5f75b62b0
 
 # Downloads are verified against checksums pinned here. WordPress.org publishes
 # none for language packs or plugins, so those were recorded on first download:
 # when translations for this version are refreshed upstream, the build fails on
 # purpose and the new checksum has to be reviewed and pinned.
 FROM ${WORDPRESS_IMAGE} AS fetch
-ARG WP_VERSION=7.1.4
-ARG PL_PL_SHA256=0ef548013e5279a8b4399a001f63a890b8d09865378513aebed26b07f1056fd4
+ARG WP_VERSION=7.1.5
+ARG PL_PL_SHA256=52b4ee6e8825f9bbdb29656171836b728d4901651cd650496ade7d01db884ab0
 ARG WP_CLI_VERSION=2.12.0
 ARG WP_CLI_SHA512=be928f6b8ca1e8dfb9d2f4b75a13aa4aee0896f8a9a0a1c45cd5d2c98605e6172e6d014dda2e27f88c98befc16c040cbb2bd1bfa121510ea5cdf5f6a30fe8832
 ARG IMPORTER_VERSION=0.9.7
 ARG IMPORTER_SHA256=d1b4d5c516351a5433fd98a58e1ff965c7822048d63de38840b6c7c506f422a6
-ARG DUPLICATOR_VERSION=5.1.0
-ARG DUPLICATOR_SHA256=5d6566a934ae5e96b9f5225b755767321183b71b8a0775d3b0221e480f56b388
+ARG DUPLICATOR_VERSION=5.2.0
+ARG DUPLICATOR_SHA256=e32d560bc0606df6655d5361287b0c825314c391e3eca549451743639c60e70d
 RUN apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/*
 WORKDIR /fetch
 RUN set -eux; \
