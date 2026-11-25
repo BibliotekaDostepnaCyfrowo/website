@@ -58,3 +58,17 @@ Contentful frontend has been retired; it is in git history up to commit `36d0036
 
 - Theme: [Feature Forest sp. z o.o.](https://featureforest.eu)
 - Design: [Radosław Śmigielski](https://www.linkedin.com/in/rados%C5%82aw-%C5%9Bmigielski-895a73302/)
+
+## License
+
+The code in this repository is released under the GNU General Public License,
+version 2 or later (GPL-2.0-or-later), the same licence as WordPress. The full
+text is in [LICENSE](LICENSE).
+
+Bundled third-party files keep their own licences, which sit next to them in
+[`wordpress/theme/biblioteka-dostepna-cyfrowo/assets/`](wordpress/theme/biblioteka-dostepna-cyfrowo/assets/):
+the fonts are under the SIL Open Font License 1.1 and Leaflet is under the BSD
+2-Clause License.
+
+The retired Next.js + Contentful frontend in git history was based on a
+Contentful starter under the MIT License.
